@@ -1,0 +1,89 @@
+project:
+  name: "capstone_sales_forecast"
+  random_seed: 42
+
+paths:
+  input_parquet: "data/capstone_project_1000_data.parquet"
+  monthly_agg: "output/capstone_monthly_agg.parquet"
+  monthly_filled: "output/monthly_aggregated_filled.parquet"
+  cluster_result: "output/weighted_score_clusters.csv"
+  data_with_features: "output/monthly_aggregated_sales_16features.parquet"
+  data_with_holidays: "output/monthly_aggregated_sales_16features_with_holidays.parquet"
+  data_predict: "output/monthly_aggregated_sales_16features_with_holidays_predict.parquet"
+  log_dir: "logs"
+  output_dir: "output"
+
+data:
+  target_col: "monthly_sales"
+  group_cols:
+    - "ref_branch_code"
+    - "material_nature_sum_desc"
+  time_col: "month"
+  min_months: 24
+  test_ratio: 0.2
+  val_ratio: 0.15
+  missing_rate_threshold: 0.8
+
+clustering:
+  long_term_threshold: 24
+  stl_period: 12
+  score_weights:
+    cv: 0.4
+    seasonal_strength: 0.4
+    residual_cv: 0.2
+  low_quantile: 0.5
+  high_quantile: 0.8
+
+features:
+  lags: [1, 2, 3, 6, 12]
+  cat_features:
+    - "Business_Type_1_Desc"
+    - "Type_Group_Desc"
+    - "Shop_Style_Desc"
+    - "City_Description"
+    - "City"
+    - "Province_Description"
+    - "City_Level_Description"
+    - "District_Desc"
+    - "Geographic_Region_Desc"
+    - "Mall_Scale_Code_Desc"
+    - "shop_type_desc"
+
+modeling:
+  enable_tuning: true
+  tree_models:
+    - "RandomForest"
+    - "GBDT"
+    - "LightGBM"
+    - "XGBoost"
+  non_tree_models:
+    - "Ridge"
+    - "Prophet"
+    - "LSTM"
+    - "Transformer"
+  dl:
+    seq_length: 12
+    epochs: 100
+    batch_size: 256
+    patience: 15
+    lr: 0.001
+    weight_decay: 0.00001
+    hidden_size: 128
+    d_model: 128
+  prophet_sample_size: 50
+  optuna_trials:
+    default: 50
+    fast: 30
+
+evaluation:
+  metrics:
+    - "mape"
+    - "wape"
+    - "rmse"
+    - "mae"
+    - "r2"
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/run.log"
