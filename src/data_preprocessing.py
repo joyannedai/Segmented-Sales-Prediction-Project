@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np
 
 
-def run_data_pipeline(input_path, verbose=True):
+def run_data_pipeline(input_path, save_path=None, verbose=True):
     """
     Data preparation pipeline
     
@@ -113,7 +113,7 @@ def run_data_pipeline(input_path, verbose=True):
     df_monthly = df_monthly[["ref_branch_code", "material_nature_sum", "stock_out_date", "RSV", "price"]]
     
     if verbose:
-        print(f"[5/6]  After monthly aggregation: {len(df_monthly):,} rows")
+        print(f"[5/6] After monthly aggregation: {len(df_monthly):,} rows")
     
     # ========== Step 5: Check missing months, drop high-missing combos ==========
     keys5 = ["ref_branch_code", "material_nature_sum"]
@@ -180,13 +180,22 @@ def run_data_pipeline(input_path, verbose=True):
     if verbose:
         print(f"Data preparation complete! Final shape: {df_final.shape}")
     
+
+    # save file
+    if save_path:
+        df_final.to_parquet(save_path, index=False)
+        if verbose:
+            print(f"Saved to: {save_path}")
+    
     return df_final
 
+        
 
 # for testing
 if __name__ == "__main__":
-    # Adjust path according to your actual data location
-    df = run_data_pipeline("../data/capstone_project_1000_data.parquet")
-    print("\ntest successful")
+    df = run_data_pipeline(
+        input_path="data/capstone_project_1000_data.parquet",
+        save_path="data/monthly_aggregated_filled.parquet"
+    )
+    print("\nTest successful!")
     print(f"Final data shape: {df.shape}")
-    print(df.head())
