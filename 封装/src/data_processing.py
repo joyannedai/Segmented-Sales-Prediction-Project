@@ -196,7 +196,7 @@ def add_holiday_features(df: pd.DataFrame) -> pd.DataFrame:
     return pd.concat([df.reset_index(drop=True), holiday_data.reset_index(drop=True)], axis=1)
 
 
-def run_data_pipeline(input_path: str, output_dir: str, missing_threshold: float = 0.8) -> pd.DataFrame:
+def run_data_pipeline(input_path: str, raw_file_path: str, missing_threshold: float = 0.8) -> pd.DataFrame:
     logger.info("Step 0: Load raw data")
     cols = [
         "ref_branch_code", "material_nature_sum_desc", "stock_out_date",
@@ -224,5 +224,22 @@ def run_data_pipeline(input_path: str, output_dir: str, missing_threshold: float
 
     logger.info("Step 6: Fill missing months")
     df_filled = fill_missing_months(df_monthly)
+
+    logger.info("Step 7: Enrich with raw categorical features")
+    raw_cols = [
+        "ref_branch_code", "material_nature_sum_desc",
+        "Business_Type_1_Desc", "Type_Group_Desc", "Shop_Style_Desc",
+        "City_Description", "City", "Province_Description",
+        "City_Level_Description", "District_Desc", "Geographic_Region_Desc",
+        "Mall_Scale_Code_Desc", "shop_type_desc",
+    ]
+    df_raw = pd.read_parquet(raw_file_path, columns=raw_cols + ["stock_out_date"])
+    df_raw = df_raw.rename(columns={"stock_out_date": "month"})
+    df_raw["month"] = pd.to_datetime(df_raw["month"]).dt.to_period("M").dt.to_timestamp()
+    df_raw = df_raw.drop_duplicates(subset=["ref_branch_code", "material_nature_sum_desc", "month"])
+    df_filled = df_filled.merge(df_raw, on=["ref_branch_code", "material_nature_sum_desc", "month"], how="left")
+
+    logger.info("Step 8: Add holiday features")
+    df_filled = add_holiday_features(df_filled)
 
     return df_filled

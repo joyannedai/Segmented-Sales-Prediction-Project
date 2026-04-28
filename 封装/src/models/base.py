@@ -1,10 +1,45 @@
 import logging
-from typing import Any, Dict
+from typing import Dict
 
 import numpy as np
-from sklearn.metrics import mean_squared_error, mean_absolute_percentage_error
+import pandas as pd
 
 logger = logging.getLogger(__name__)
+
+
+def seasonal_naive_forecast(train_series: np.ndarray, test_len: int, period: int = 12) -> np.ndarray:
+    if len(train_series) >= period:
+        pattern = train_series[-period:]
+        repeats = test_len // period + 1
+        return np.tile(pattern, repeats)[:test_len]
+    return np.full(test_len, np.mean(train_series))
+
+
+def compute_baseline(df: pd.DataFrame, group_cols: list, target: str, test_ratio: float = 0.2) -> Dict[str, float]:
+    mean_wapes = []
+    seasonal_wapes = []
+
+    for _, group in df.groupby(group_cols):
+        group = group.sort_values("month")
+        n = len(group)
+        if n < 6:
+            continue
+        split_idx = int(n * (1 - test_ratio))
+        train_series = group.iloc[:split_idx][target].values
+        test_series = group.iloc[split_idx:][target].values
+        if len(test_series) == 0:
+            continue
+        mean_pred = np.full(len(test_series), np.mean(train_series))
+        mean_wapes.append(wape(test_series, mean_pred))
+        seasonal_pred = seasonal_naive_forecast(train_series, len(test_series))
+        seasonal_wapes.append(wape(test_series, seasonal_pred))
+
+    mean_wape = float(np.mean(mean_wapes)) if mean_wapes else np.nan
+    seasonal_wape = float(np.mean(seasonal_wapes)) if seasonal_wapes else np.nan
+    best_baseline = min(mean_wape, seasonal_wape)
+
+    logger.info(f"Baseline: mean={mean_wape:.2f}%, seasonal_naive={seasonal_wape:.2f}%, best={best_baseline:.2f}%")
+    return {"mean": mean_wape, "seasonal": seasonal_wape, "best": best_baseline}
 
 
 def wape(y_true: np.ndarray, y_pred: np.ndarray) -> float:
@@ -12,30 +47,3 @@ def wape(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     y_pred = np.asarray(y_pred).flatten()
     denom = np.sum(np.abs(y_true))
     return float(np.sum(np.abs(y_true - y_pred)) / (denom + 1e-8) * 100)
-
-
-def mape(y_true: np.ndarray, y_pred: np.ndarray) -> float:
-    y_true = np.asarray(y_true).flatten()
-    y_pred = np.asarray(y_pred).flatten()
-    return float(np.mean(np.abs((y_true - y_pred) / (y_true + 1e-8))) * 100)
-
-
-def evaluate(y_true: np.ndarray, y_pred: np.ndarray) -> Dict[str, float]:
-    y_true = np.asarray(y_true).flatten()
-    y_pred = np.asarray(y_pred).flatten()
-    mask = ~np.isnan(y_true) & ~np.isnan(y_pred)
-    y_true = y_true[mask]
-    y_pred = y_pred[mask]
-
-    if len(y_true) == 0:
-        return {"mape": np.nan, "wape": np.nan, "rmse": np.nan, "mae": np.nan, "r2": np.nan}
-
-    rmse = float(np.sqrt(mean_squared_error(y_true, y_pred)))
-    mape_val = float(mean_absolute_percentage_error(y_true, y_pred) * 100)
-    mae_val = float(np.mean(np.abs(y_true - y_pred)))
-    ss_res = np.sum((y_true - y_pred) ** 2)
-    ss_tot = np.sum((y_true - np.mean(y_true)) ** 2)
-    r2 = float(1 - ss_res / ss_tot) if ss_tot != 0 else 0.0
-    wape_val = float(np.sum(np.abs(y_true - y_pred)) / (np.sum(np.abs(y_true)) + 1e-8) * 100)
-
-    return {"mape": mape_val, "wape": wape_val, "rmse": rmse, "mae": mae_val, "r2": r2}

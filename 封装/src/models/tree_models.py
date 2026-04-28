@@ -5,7 +5,7 @@ import numpy as np
 import xgboost as xgb
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 
-from src.models.base import evaluate
+from src.evaluation import evaluate
 
 logger = logging.getLogger(__name__)
 

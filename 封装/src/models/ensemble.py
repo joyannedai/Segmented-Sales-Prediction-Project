@@ -3,7 +3,7 @@ from typing import Dict
 
 import numpy as np
 
-from src.models.base import wape
+from src.evaluation import wape
 
 logger = logging.getLogger(__name__)
 

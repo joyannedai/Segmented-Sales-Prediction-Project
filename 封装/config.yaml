@@ -4,12 +4,8 @@ project:
 
 paths:
   input_parquet: "data/capstone_project_1000_data.parquet"
-  monthly_agg: "output/capstone_monthly_agg.parquet"
-  monthly_filled: "output/monthly_aggregated_filled.parquet"
   cluster_result: "output/weighted_score_clusters.csv"
-  data_with_features: "output/monthly_aggregated_sales_16features.parquet"
-  data_with_holidays: "output/monthly_aggregated_sales_16features_with_holidays.parquet"
-  data_predict: "output/monthly_aggregated_sales_16features_with_holidays_predict.parquet"
+  data_predict: "output/monthly_aggregated_sales_predict.parquet"
   log_dir: "logs"
   output_dir: "output"
 

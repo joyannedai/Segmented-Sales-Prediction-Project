@@ -9,7 +9,7 @@ import torch.nn as nn
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from torch.utils.data import TensorDataset, DataLoader
 
-from src.models.base import evaluate
+from src.evaluation import evaluate
 
 logger = logging.getLogger(__name__)
 
