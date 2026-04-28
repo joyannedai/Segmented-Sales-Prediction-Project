@@ -12,3 +12,4 @@ lightgbm>=4.0.0
 xgboost>=2.0.0
 torch>=2.0.0
 optuna>=3.0.0
+
