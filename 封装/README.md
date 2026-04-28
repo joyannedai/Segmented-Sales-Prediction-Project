@@ -9,6 +9,7 @@
 ```
 .
 ├── config.yaml              # 全局配置文件（路径、超参数、随机种子）
+├── tuned_params.json        # 预调优树模型参数（关闭调参时使用）
 ├── requirements.txt         # Python 依赖
 ├── main.py                  # 统一入口脚本（仅调用 5 个 Stage）
 ├── logs/                    # 运行日志输出目录
@@ -83,19 +84,21 @@ python main.py --stage train
 
 ```
 
-### 5. Optuna 调参开关
+### 5. 调参开关
 
-调优默认**启用**（`config.yaml` 中 `modeling.enable_tuning: true`）。树模型会在验证集上搜索最优超参数，然后用最优参数在完整训练集上重新训练，并用于加权融合。
+项目默认**关闭实时调参**（`config.yaml` 中 `modeling.enable_tuning: false`），树模型（RandomForest / GBDT / LightGBM / XGBoost）会直接加载 `tuned_params.json` 中预存的最佳参数，既保证效果又避免重复调参耗时。
 
-**关闭调优（快速验证）：**
+**开启实时 Optuna 调参：**
 
 ```bash
-# 方式一：命令行覆盖（推荐）
-python main.py --skip-tuning
+# 方式一：命令行覆盖
+python main.py
 
 # 方式二：修改配置文件
-# config.yaml -> modeling.enable_tuning: false
+# config.yaml -> modeling.enable_tuning: true
 ```
+
+开启后，树模型会在验证集上重新搜索最优超参数，记录验证集 WAPE 用于加权融合。关闭时则从 `tuned_params.json` 读取，若找不到对应参数则回退到代码默认值。
 
 ---
 
@@ -111,6 +114,7 @@ python main.py --skip-tuning
 - 缺失月份用前3月均值 + 去年同期值填充
 - 补充原始外部特征（门店属性等类别变量）
 - 添加节日特征（新年、春节、劳动节、国庆）
+- **只输出一个最终文件**，不再保留中间步骤的多个 parquet
 
 ### Stage 2: 智能分群 (`clustering.py`)
 
@@ -118,6 +122,7 @@ python main.py --skip-tuning
 - 长时序做 STL 分解，提取 CV、季节强度、残差 CV
 - 加权打分（CV 0.4 + 季节强度 0.4 + 残差 CV 0.2）
 - 按分位数切分为 high / medium / low 三组
+- **只保存带有 `predictability_level` 标签的完整数据**，删除高中低分开保存的冗余
 
 ### Stage 3: 群内准备 (`group_preparation.py`)
 
@@ -131,7 +136,7 @@ python main.py --skip-tuning
 
 - **树模型**：RandomForest / GBDT / LightGBM / XGBoost
   - 若 `enable_tuning=true`：先用 Optuna 在严格训练集（切出 val）上搜索最优超参数，记录验证集 WAPE；再用最优参数在完整训练集上重新训练；最后在测试集上预测
-  - 若 `enable_tuning=false`：直接使用默认参数训练
+  - 若 `enable_tuning=false`：优先从 `tuned_params.json` 加载该组该模型的预调优参数；找不到时回退到代码默认值
 - **传统模型**：Ridge / Prophet（抽样运行）
 - **深度学习**：LSTM（BiLSTM + MultiheadAttention） / Transformer（PositionalEncoding）
 - **融合**：简单平均 / 加权平均（按验证集 WAPE 倒数加权） / 中位数 / 截尾平均
@@ -157,6 +162,7 @@ python main.py --skip-tuning
 | `model_comparison_{group}.png` | 各组建模效果对比图 |
 | `feature_importance_{group}_{model}.png` | 特征重要性图 |
 | `all_models.pkl` | 训练好的模型缓存 |
+| `tuned_params.json` | 预调优树模型参数（项目自包含） |
 | `logs/run.log` | 完整运行日志 |
 
 ---

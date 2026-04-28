@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import Dict, List, Tuple
 
 import numpy as np
@@ -14,6 +15,25 @@ from src.tuning import optimize_gbdt, optimize_lightgbm, optimize_random_forest,
 from src.utils import set_random_seed
 
 logger = logging.getLogger(__name__)
+
+
+def load_tuned_params(tuned_params_path: str, grp: str, model_name: str) -> dict:
+    """Load best tuned parameters from project-local JSON."""
+    if not tuned_params_path or not os.path.exists(tuned_params_path):
+        return None
+    try:
+        import json
+        with open(tuned_params_path, "r", encoding="utf-8") as f:
+            tuned = json.load(f)
+        params = tuned.get(grp, {}).get(model_name)
+        if params:
+            # random_state is managed by train_fn itself
+            params = {k: v for k, v in params.items() if k != "random_state"}
+            return params
+        return None
+    except Exception as e:
+        logger.warning(f"Failed to load tuned params for {grp}/{model_name}: {e}")
+        return None
 
 
 def run_modeling(
@@ -46,6 +66,8 @@ def run_modeling(
     trained_models = {}
     val_wapes = {}
 
+    tuned_params_path = config.get("paths", {}).get("tuned_params")
+
     # Tree models
     tree_trainers = {
         "RandomForest": (train_random_forest, optimize_random_forest),
@@ -67,8 +89,13 @@ def run_modeling(
                     logger.info(f"[{grp}/{name}] Tuning unavailable, using defaults")
                     model, y_pred, metrics = train_fn(X_train, y_train, X_test, y_test)
             else:
-                logger.info(f"[{grp}/{name}] Training with defaults...")
-                model, y_pred, metrics = train_fn(X_train, y_train, X_test, y_test)
+                tuned_params = load_tuned_params(tuned_params_path, grp, name)
+                if tuned_params:
+                    logger.info(f"[{grp}/{name}] Using tuned params from tuned_params.json")
+                    model, y_pred, metrics = train_fn(X_train, y_train, X_test, y_test, **tuned_params)
+                else:
+                    logger.info(f"[{grp}/{name}] Tuned params not found, falling back to defaults...")
+                    model, y_pred, metrics = train_fn(X_train, y_train, X_test, y_test)
 
             all_test_preds[name] = y_pred
             trained_models[name] = model

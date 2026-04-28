@@ -8,6 +8,7 @@ paths:
   data_predict: "output/monthly_aggregated_sales_predict.parquet"
   log_dir: "logs"
   output_dir: "output"
+  tuned_params: "tuned_params.json"
 
 data:
   target_col: "monthly_sales"
