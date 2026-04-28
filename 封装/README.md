@@ -111,7 +111,6 @@ python main.py --skip-tuning
 - 缺失月份用前3月均值 + 去年同期值填充
 - 补充原始外部特征（门店属性等类别变量）
 - 添加节日特征（新年、春节、劳动节、国庆）
-- **只输出一个最终文件**，不再保留中间步骤的多个 parquet
 
 ### Stage 2: 智能分群 (`clustering.py`)
 
@@ -119,7 +118,6 @@ python main.py --skip-tuning
 - 长时序做 STL 分解，提取 CV、季节强度、残差 CV
 - 加权打分（CV 0.4 + 季节强度 0.4 + 残差 CV 0.2）
 - 按分位数切分为 high / medium / low 三组
-- **只保存带有 `predictability_level` 标签的完整数据**，删除高中低分开保存的冗余
 
 ### Stage 3: 群内准备 (`group_preparation.py`)
 
