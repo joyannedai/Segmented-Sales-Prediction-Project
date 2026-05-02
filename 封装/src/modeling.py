@@ -9,7 +9,7 @@ from src.evaluation import evaluate
 from src.models.base import compute_baseline
 from src.models.dl_models import run_dl_experiment
 from src.models.ensemble import run_fusion
-from src.models.traditional import train_prophet_sample, train_ridge
+from src.models.traditional import train_ridge
 from src.models.tree_models import train_gbdt, train_lightgbm, train_random_forest, train_xgboost
 from src.tuning import optimize_gbdt, optimize_lightgbm, optimize_random_forest, optimize_xgboost
 from src.utils import set_random_seed
@@ -43,11 +43,16 @@ def run_modeling(
     config: dict,
     grp: str,
     seed: int = 42,
-) -> Tuple[List[dict], dict, dict, dict]:
+) -> Tuple[List[dict], dict, dict, dict, dict]:
     set_random_seed(seed)
     data_cfg = config["data"]
     model_cfg = config["modeling"]
     enable_tuning = model_cfg.get("enable_tuning", True)
+    optuna_trials = model_cfg.get("optuna_trials", {})
+    if isinstance(optuna_trials, dict):
+        n_trials = int(optuna_trials.get("default", 50))
+    else:
+        n_trials = int(optuna_trials or 50)
 
     X_train = processed["X_train"]
     y_train = processed["y_train"]
@@ -67,6 +72,7 @@ def run_modeling(
     val_wapes = {}
 
     tuned_params_path = config.get("paths", {}).get("tuned_params")
+    train_low_trees_on_strict = grp == "low"
 
     # Tree models
     tree_trainers = {
@@ -80,10 +86,13 @@ def run_modeling(
         try:
             if enable_tuning:
                 logger.info(f"[{grp}/{name}] Tuning on strict train/val...")
-                best_params, best_val_wape = tune_fn(X_train_strict, y_train_strict, X_val, y_val, n_trials=30, seed=seed)
+                best_params, best_val_wape = tune_fn(X_train_strict, y_train_strict, X_val, y_val, n_trials=n_trials, seed=seed)
                 if best_params is not None:
                     logger.info(f"[{grp}/{name}] Best val WAPE={best_val_wape:.2f}%, params={best_params}")
-                    model, y_pred, metrics = train_fn(X_train, y_train, X_test, y_test, **best_params)
+                    if train_low_trees_on_strict:
+                        model, y_pred, metrics = train_fn(X_train_strict, y_train_strict, X_test, y_test, **best_params)
+                    else:
+                        model, y_pred, metrics = train_fn(X_train, y_train, X_test, y_test, **best_params)
                     val_wapes[name] = best_val_wape
                 else:
                     logger.info(f"[{grp}/{name}] Tuning unavailable, using defaults")
@@ -92,7 +101,11 @@ def run_modeling(
                 tuned_params = load_tuned_params(tuned_params_path, grp, name)
                 if tuned_params:
                     logger.info(f"[{grp}/{name}] Using tuned params from tuned_params.json")
-                    model, y_pred, metrics = train_fn(X_train, y_train, X_test, y_test, **tuned_params)
+                    if train_low_trees_on_strict:
+                        logger.info(f"[{grp}/{name}] Low group uses notebook-style strict training")
+                        model, y_pred, metrics = train_fn(X_train_strict, y_train_strict, X_test, y_test, **tuned_params)
+                    else:
+                        model, y_pred, metrics = train_fn(X_train, y_train, X_test, y_test, **tuned_params)
                 else:
                     logger.info(f"[{grp}/{name}] Tuned params not found, falling back to defaults...")
                     model, y_pred, metrics = train_fn(X_train, y_train, X_test, y_test)
@@ -115,17 +128,6 @@ def run_modeling(
         logger.info(f"[{grp}/Ridge] Test WAPE={metrics['wape']:.2f}%")
     except Exception as e:
         logger.warning(f"[{grp}/Ridge] failed: {e}")
-
-    try:
-        _, _, prophet_wape, _ = train_prophet_sample(
-            train_df, test_df, data_cfg["group_cols"],
-            sample_size=model_cfg.get("prophet_sample_size", 50), random_state=seed,
-        )
-        if prophet_wape is not None:
-            all_results.append({"model": "Prophet", "wape": prophet_wape, "mape": prophet_wape})
-            logger.info(f"[{grp}/Prophet] Test WAPE={prophet_wape:.2f}%")
-    except Exception as e:
-        logger.warning(f"[{grp}/Prophet] failed: {e}")
 
     # DL models
     try:

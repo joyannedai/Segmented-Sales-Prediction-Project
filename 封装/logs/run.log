@@ -1,0 +1,986 @@
+2026-05-02 17:14:52,923 - __main__ - INFO - ============================================================
+2026-05-02 17:14:52,924 - __main__ - INFO - Stage 1: Data Processing
+2026-05-02 17:14:52,924 - __main__ - INFO - ============================================================
+2026-05-02 17:14:52,924 - src.data_processing - INFO - Step 0: Load raw data
+2026-05-02 17:14:54,049 - src.data_processing - INFO - Step 1: Remove invalid date rows
+2026-05-02 17:14:54,614 - src.data_processing - INFO - Step 2: Clamp negative RSV
+2026-05-02 17:14:54,831 - src.data_processing - INFO - Step 3: Deduplicate daily
+2026-05-02 17:14:58,709 - src.data_processing - INFO - Step 4: Aggregate monthly
+2026-05-02 17:15:00,085 - src.data_processing - INFO - Step 5: Check missing months
+2026-05-02 17:15:10,884 - src.data_processing - INFO - Step 5.1: Drop high missing-rate pairs
+2026-05-02 17:15:11,001 - src.data_processing - INFO - Step 6: Fill missing months
+2026-05-02 17:15:55,656 - src.data_processing - INFO - Step 7: Enrich with raw categorical features
+2026-05-02 17:16:02,579 - src.data_processing - INFO - Step 8: Add holiday features
+2026-05-02 17:22:23,968 - __main__ - INFO - Saved processed data: output/monthly_aggregated_sales_predict.parquet
+2026-05-02 17:22:23,971 - __main__ - INFO - ============================================================
+2026-05-02 17:22:23,971 - __main__ - INFO - Stage 2: Clustering
+2026-05-02 17:22:23,971 - __main__ - INFO - ============================================================
+2026-05-02 17:22:23,972 - src.clustering - INFO - Evaluating time spans...
+2026-05-02 17:22:26,159 - src.clustering - INFO - Total combos: 9288, Long: 7582, Short: 1706
+2026-05-02 17:22:26,731 - src.clustering - INFO - Extracting STL features for long-term series...
+2026-05-02 17:22:59,796 - src.clustering - INFO - Cluster distribution:
+predictability_level
+low       3791
+medium    2274
+short     1706
+high      1517
+Name: count, dtype: int64
+2026-05-02 17:22:59,797 - src.clustering - INFO - Thresholds: low/medium=50.83, medium/high=71.42
+2026-05-02 17:22:59,909 - __main__ - INFO - Saved clusters: output/weighted_score_clusters.csv
+2026-05-02 17:23:01,162 - __main__ - INFO - Saved predict data: output/monthly_aggregated_sales_predict.parquet
+2026-05-02 17:23:01,162 - __main__ - INFO - ============================================================
+2026-05-02 17:23:01,162 - __main__ - INFO - Stage 3-5: Group Preparation -> Modeling -> Result Analysis
+2026-05-02 17:23:01,162 - __main__ - INFO - ============================================================
+2026-05-02 17:23:04,229 - src.group_preparation - INFO - Features prepared: 32
+2026-05-02 17:23:05,418 - src.models.base - INFO - Baseline: mean=53.23%, seasonal_naive=52.11%, best=52.11%
+2026-05-02 17:23:05,424 - src.modeling - INFO - [high/RandomForest] Using tuned params from tuned_params.json
+2026-05-02 17:23:10,097 - src.modeling - INFO - [high/RandomForest] Test WAPE=24.96%
+2026-05-02 17:23:10,097 - src.modeling - INFO - [high/GBDT] Using tuned params from tuned_params.json
+2026-05-02 17:23:52,717 - src.modeling - INFO - [high/GBDT] Test WAPE=25.79%
+2026-05-02 17:23:52,718 - src.modeling - INFO - [high/LightGBM] Using tuned params from tuned_params.json
+2026-05-02 17:23:54,599 - src.modeling - INFO - [high/LightGBM] Test WAPE=25.58%
+2026-05-02 17:23:54,601 - src.modeling - INFO - [high/XGBoost] Using tuned params from tuned_params.json
+2026-05-02 17:23:55,970 - src.modeling - INFO - [high/XGBoost] Test WAPE=26.31%
+2026-05-02 17:23:56,055 - src.modeling - INFO - [high/Ridge] Test WAPE=29.34%
+2026-05-02 17:23:56,156 - prophet.plot - ERROR - Importing plotly failed. Interactive plots will not work.
+2026-05-02 17:23:56,341 - prophet - INFO - n_changepoints greater than number of observations. Using 21.
+2026-05-02 17:23:56,357 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:23:56,622 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:23:57,161 - prophet - INFO - n_changepoints greater than number of observations. Using 21.
+2026-05-02 17:23:57,166 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:23:57,254 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:23:57,346 - prophet - INFO - n_changepoints greater than number of observations. Using 23.
+2026-05-02 17:23:57,351 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:23:57,466 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:23:57,579 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:23:57,791 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:23:57,895 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:23:58,072 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:23:58,173 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:23:58,331 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:23:58,419 - prophet - INFO - n_changepoints greater than number of observations. Using 23.
+2026-05-02 17:23:58,431 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:23:58,522 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:23:58,615 - prophet - INFO - n_changepoints greater than number of observations. Using 16.
+2026-05-02 17:23:58,624 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:23:58,682 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:23:58,774 - prophet - INFO - n_changepoints greater than number of observations. Using 23.
+2026-05-02 17:23:58,784 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:23:58,913 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:23:59,018 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:23:59,165 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:23:59,264 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:23:59,415 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:23:59,514 - prophet - INFO - n_changepoints greater than number of observations. Using 23.
+2026-05-02 17:23:59,519 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:23:59,596 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:23:59,696 - prophet - INFO - n_changepoints greater than number of observations. Using 19.
+2026-05-02 17:23:59,702 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:23:59,781 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:23:59,875 - prophet - INFO - n_changepoints greater than number of observations. Using 16.
+2026-05-02 17:23:59,883 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:07,135 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:07,228 - prophet - INFO - n_changepoints greater than number of observations. Using 17.
+2026-05-02 17:24:07,233 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:07,320 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:07,430 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:07,573 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:07,668 - prophet - INFO - n_changepoints greater than number of observations. Using 18.
+2026-05-02 17:24:07,678 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:07,795 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:07,897 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:08,013 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:08,124 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:08,314 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:08,416 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:08,565 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:08,662 - prophet - INFO - n_changepoints greater than number of observations. Using 18.
+2026-05-02 17:24:08,670 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:08,750 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:08,857 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:09,022 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:09,122 - prophet - INFO - n_changepoints greater than number of observations. Using 16.
+2026-05-02 17:24:09,129 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:14,528 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:14,617 - prophet - INFO - n_changepoints greater than number of observations. Using 15.
+2026-05-02 17:24:14,622 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:21,176 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:21,271 - prophet - INFO - n_changepoints greater than number of observations. Using 15.
+2026-05-02 17:24:21,281 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:27,657 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:27,756 - prophet - INFO - n_changepoints greater than number of observations. Using 14.
+2026-05-02 17:24:27,762 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:30,059 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:30,154 - prophet - INFO - n_changepoints greater than number of observations. Using 19.
+2026-05-02 17:24:30,159 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:30,253 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:30,350 - prophet - INFO - n_changepoints greater than number of observations. Using 23.
+2026-05-02 17:24:30,355 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:30,486 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:30,589 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:30,754 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:30,849 - prophet - INFO - n_changepoints greater than number of observations. Using 14.
+2026-05-02 17:24:30,857 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:31,003 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:31,096 - prophet - INFO - n_changepoints greater than number of observations. Using 19.
+2026-05-02 17:24:31,102 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:31,189 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:31,284 - prophet - INFO - n_changepoints greater than number of observations. Using 15.
+2026-05-02 17:24:31,289 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:37,927 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:38,025 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:38,168 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:38,266 - prophet - INFO - n_changepoints greater than number of observations. Using 21.
+2026-05-02 17:24:38,271 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:38,356 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:38,450 - prophet - INFO - n_changepoints greater than number of observations. Using 18.
+2026-05-02 17:24:38,460 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:38,547 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:38,648 - prophet - INFO - n_changepoints greater than number of observations. Using 15.
+2026-05-02 17:24:38,655 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:38,858 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:38,950 - prophet - INFO - n_changepoints greater than number of observations. Using 15.
+2026-05-02 17:24:38,961 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:45,460 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:45,561 - prophet - INFO - n_changepoints greater than number of observations. Using 18.
+2026-05-02 17:24:45,566 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:45,628 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:45,722 - prophet - INFO - n_changepoints greater than number of observations. Using 18.
+2026-05-02 17:24:45,727 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:53,113 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:53,210 - prophet - INFO - n_changepoints greater than number of observations. Using 21.
+2026-05-02 17:24:53,215 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:53,309 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:53,401 - prophet - INFO - n_changepoints greater than number of observations. Using 14.
+2026-05-02 17:24:53,407 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:59,672 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:59,765 - prophet - INFO - n_changepoints greater than number of observations. Using 20.
+2026-05-02 17:24:59,774 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:24:59,859 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:24:59,965 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:25:00,118 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:25:00,215 - prophet - INFO - n_changepoints greater than number of observations. Using 19.
+2026-05-02 17:25:00,220 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:25:00,308 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:25:00,405 - prophet - INFO - n_changepoints greater than number of observations. Using 14.
+2026-05-02 17:25:00,411 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:25:06,668 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:25:06,767 - prophet - INFO - n_changepoints greater than number of observations. Using 18.
+2026-05-02 17:25:06,775 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:25:06,868 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:25:06,956 - prophet - INFO - n_changepoints greater than number of observations. Using 15.
+2026-05-02 17:25:06,962 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:25:13,413 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:25:13,517 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:25:13,606 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:25:13,708 - prophet - INFO - n_changepoints greater than number of observations. Using 23.
+2026-05-02 17:25:13,710 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:25:13,818 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:25:13,913 - prophet - INFO - n_changepoints greater than number of observations. Using 24.
+2026-05-02 17:25:13,919 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:25:14,073 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:25:14,113 - src.modeling - INFO - [high/Prophet] Test WAPE=61.93%
+2026-05-02 17:25:14,183 - src.models.dl_models - INFO - Training LSTM (seq_length=12)
+2026-05-02 17:25:16,966 - src.models.dl_models - INFO - Samples: Train=33,255, Test=1,338
+2026-05-02 17:25:17,123 - src.models.dl_models - INFO - Using device: cuda
+2026-05-02 17:25:17,168 - src.models.dl_models - INFO - Model parameters: 847,617
+2026-05-02 17:25:38,505 - src.models.dl_models - INFO - DL early stop at epoch 16, best val loss 1.335808
+2026-05-02 17:25:38,548 - src.models.dl_models - INFO - LSTM Test MAPE=441.28% WAPE=70.25%
+2026-05-02 17:25:38,551 - src.modeling - INFO - [high/LSTM] Test WAPE=70.25%
+2026-05-02 17:25:38,570 - src.models.dl_models - INFO - Training TRANSFORMER (seq_length=12)
+2026-05-02 17:25:41,282 - src.models.dl_models - INFO - Samples: Train=33,255, Test=1,338
+2026-05-02 17:25:41,394 - src.models.dl_models - INFO - Using device: cuda
+2026-05-02 17:25:41,438 - src.models.dl_models - INFO - Model parameters: 276,481
+2026-05-02 17:25:55,741 - src.models.dl_models - INFO - DL early stop at epoch 16, best val loss 1.264141
+2026-05-02 17:25:55,756 - src.models.dl_models - INFO - TRANSFORMER Test MAPE=121.11% WAPE=66.62%
+2026-05-02 17:25:55,759 - src.modeling - INFO - [high/Transformer] Test WAPE=66.62%
+2026-05-02 17:25:55,759 - src.models.ensemble - INFO - Fusion results: avg=25.07%, weighted=25.07%, median=25.18%, trimmed=25.06%
+2026-05-02 17:25:55,782 - src.result_analysis - INFO - Saved results: output\results_high.csv
+2026-05-02 17:25:55,782 - src.result_analysis - INFO - [high] Best model: RandomForest (WAPE=24.96%)
+2026-05-02 17:25:56,891 - src.visualization - INFO - Saved plot: output\model_comparison_high.png
+2026-05-02 17:25:57,394 - src.visualization - INFO - Saved plot: output\feature_importance_high_RandomForest.png
+2026-05-02 17:25:57,647 - src.visualization - INFO - Saved plot: output\feature_importance_high_GBDT.png
+2026-05-02 17:25:57,912 - src.visualization - INFO - Saved plot: output\feature_importance_high_LightGBM.png
+2026-05-02 17:25:58,173 - src.visualization - INFO - Saved plot: output\feature_importance_high_XGBoost.png
+2026-05-02 17:25:58,444 - src.visualization - INFO - Saved plot: output\feature_importance_high_Ridge.png
+2026-05-02 17:25:58,444 - src.result_analysis - INFO - 
+HIGH Group Results:
+2026-05-02 17:25:58,449 - src.result_analysis - INFO -   mape  wape      rmse       mae   r2             model  improvement_vs_baseline
+ 79.07 24.96 156400.29  98145.71 0.84      RandomForest                    52.09
+ 25.06 25.06       NaN       NaN  NaN  Ensemble_Trimmed                    51.91
+ 25.07 25.07       NaN       NaN  NaN      Ensemble_Avg                    51.90
+ 25.07 25.07       NaN       NaN  NaN Ensemble_Weighted                    51.90
+ 25.18 25.18       NaN       NaN  NaN   Ensemble_Median                    51.68
+105.11 25.58 158100.38 100560.37 0.83          LightGBM                    50.91
+111.29 25.79 157731.75 101407.04 0.84              GBDT                    50.50
+102.25 26.31 160149.53 103444.39 0.83           XGBoost                    49.51
+ 90.64 29.34 177657.39 115341.34 0.79             Ridge                    43.70
+ 61.93 61.93       NaN       NaN  NaN           Prophet                   -18.83
+ 66.62 66.62       NaN       NaN  NaN       Transformer                   -27.85
+ 70.25 70.25       NaN       NaN  NaN              LSTM                   -34.82
+2026-05-02 17:25:58,449 - __main__ - INFO - Group high completed
+2026-05-02 17:26:03,721 - src.group_preparation - INFO - Features prepared: 32
+2026-05-02 17:26:05,481 - src.models.base - INFO - Baseline: mean=85.23%, seasonal_naive=72.82%, best=72.82%
+2026-05-02 17:26:05,486 - src.modeling - INFO - [medium/RandomForest] Using tuned params from tuned_params.json
+2026-05-02 17:26:15,789 - src.modeling - INFO - [medium/RandomForest] Test WAPE=30.57%
+2026-05-02 17:26:15,790 - src.modeling - INFO - [medium/GBDT] Using tuned params from tuned_params.json
+2026-05-02 17:27:27,688 - src.modeling - INFO - [medium/GBDT] Test WAPE=31.37%
+2026-05-02 17:27:27,691 - src.modeling - INFO - [medium/LightGBM] Using tuned params from tuned_params.json
+2026-05-02 17:27:28,603 - src.modeling - INFO - [medium/LightGBM] Test WAPE=30.83%
+2026-05-02 17:27:28,605 - src.modeling - INFO - [medium/XGBoost] Using tuned params from tuned_params.json
+2026-05-02 17:27:30,095 - src.modeling - INFO - [medium/XGBoost] Test WAPE=30.08%
+2026-05-02 17:27:30,157 - src.modeling - INFO - [medium/Ridge] Test WAPE=36.03%
+2026-05-02 17:27:30,247 - prophet - INFO - n_changepoints greater than number of observations. Using 22.
+2026-05-02 17:27:30,257 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:30,374 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:30,472 - prophet - INFO - n_changepoints greater than number of observations. Using 19.
+2026-05-02 17:27:30,476 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:30,609 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:30,712 - prophet - INFO - n_changepoints greater than number of observations. Using 21.
+2026-05-02 17:27:30,715 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:30,841 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:30,943 - prophet - INFO - n_changepoints greater than number of observations. Using 21.
+2026-05-02 17:27:30,950 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:31,022 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:31,120 - prophet - INFO - n_changepoints greater than number of observations. Using 19.
+2026-05-02 17:27:31,121 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:31,235 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:31,343 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:31,461 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:31,562 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:31,681 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:31,781 - prophet - INFO - n_changepoints greater than number of observations. Using 23.
+2026-05-02 17:27:31,786 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:31,870 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:31,967 - prophet - INFO - n_changepoints greater than number of observations. Using 24.
+2026-05-02 17:27:31,971 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:32,081 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:32,193 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:32,385 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:32,498 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:32,608 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:32,712 - prophet - INFO - n_changepoints greater than number of observations. Using 23.
+2026-05-02 17:27:32,714 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:32,795 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:32,890 - prophet - INFO - n_changepoints greater than number of observations. Using 15.
+2026-05-02 17:27:32,896 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:33,227 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:33,337 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:33,521 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:33,621 - prophet - INFO - n_changepoints greater than number of observations. Using 21.
+2026-05-02 17:27:33,626 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:33,719 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:33,826 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:33,946 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:34,048 - prophet - INFO - n_changepoints greater than number of observations. Using 21.
+2026-05-02 17:27:34,052 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:34,117 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:34,220 - prophet - INFO - n_changepoints greater than number of observations. Using 14.
+2026-05-02 17:27:34,221 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:35,204 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:35,305 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:35,451 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:35,549 - prophet - INFO - n_changepoints greater than number of observations. Using 24.
+2026-05-02 17:27:35,555 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:35,662 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:35,775 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:35,963 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:36,073 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:36,198 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:36,309 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:36,514 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:36,617 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:36,761 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:36,871 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:37,031 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:37,135 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:37,213 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:37,322 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:37,574 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:37,680 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:37,817 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:37,924 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:38,039 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:38,137 - prophet - INFO - n_changepoints greater than number of observations. Using 14.
+2026-05-02 17:27:38,142 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:38,429 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:38,546 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:38,814 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:38,931 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:39,188 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:39,299 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:39,438 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:39,540 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:39,609 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:39,719 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:39,816 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:39,919 - prophet - INFO - n_changepoints greater than number of observations. Using 21.
+2026-05-02 17:27:39,926 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:40,042 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:40,142 - prophet - INFO - n_changepoints greater than number of observations. Using 19.
+2026-05-02 17:27:40,147 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:40,239 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:40,359 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:40,452 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:40,555 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:40,694 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:40,801 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:40,925 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:41,040 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:41,180 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:41,275 - prophet - INFO - n_changepoints greater than number of observations. Using 22.
+2026-05-02 17:27:41,283 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:41,361 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:41,473 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:41,601 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:41,702 - prophet - INFO - n_changepoints greater than number of observations. Using 22.
+2026-05-02 17:27:41,709 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:41,801 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:41,897 - prophet - INFO - n_changepoints greater than number of observations. Using 20.
+2026-05-02 17:27:41,902 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:41,996 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:42,107 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:42,204 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:42,299 - prophet - INFO - n_changepoints greater than number of observations. Using 21.
+2026-05-02 17:27:42,304 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:42,366 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:42,471 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:42,562 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:42,671 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:42,851 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:42,960 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:27:43,083 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:27:43,125 - src.modeling - INFO - [medium/Prophet] Test WAPE=74.20%
+2026-05-02 17:27:43,247 - src.models.dl_models - INFO - Training LSTM (seq_length=12)
+2026-05-02 17:27:47,937 - src.models.dl_models - INFO - Samples: Train=81,052, Test=5,823
+2026-05-02 17:27:48,225 - src.models.dl_models - INFO - Using device: cuda
+2026-05-02 17:27:48,225 - src.models.dl_models - INFO - Model parameters: 847,617
+2026-05-02 17:28:32,087 - src.models.dl_models - INFO - DL early stop at epoch 16, best val loss 1.417875
+2026-05-02 17:28:32,202 - src.models.dl_models - INFO - LSTM Test MAPE=1277674387406848000.00% WAPE=84.86%
+2026-05-02 17:28:32,207 - src.modeling - INFO - [medium/LSTM] Test WAPE=84.86%
+2026-05-02 17:28:32,264 - src.models.dl_models - INFO - Training TRANSFORMER (seq_length=12)
+2026-05-02 17:28:37,118 - src.models.dl_models - INFO - Samples: Train=81,052, Test=5,823
+2026-05-02 17:28:37,398 - src.models.dl_models - INFO - Using device: cuda
+2026-05-02 17:28:37,410 - src.models.dl_models - INFO - Model parameters: 276,481
+2026-05-02 17:29:12,134 - src.models.dl_models - INFO - DL early stop at epoch 16, best val loss 1.492226
+2026-05-02 17:29:12,163 - src.models.dl_models - INFO - TRANSFORMER Test MAPE=4417159115571200000.00% WAPE=81.05%
+2026-05-02 17:29:12,176 - src.modeling - INFO - [medium/Transformer] Test WAPE=81.05%
+2026-05-02 17:29:12,178 - src.models.ensemble - INFO - Fusion results: avg=29.68%, weighted=29.68%, median=29.58%, trimmed=29.68%
+2026-05-02 17:29:12,222 - src.result_analysis - INFO - Saved results: output\results_medium.csv
+2026-05-02 17:29:12,222 - src.result_analysis - INFO - [medium] Best model: Ensemble_Median (WAPE=29.58%)
+2026-05-02 17:29:12,682 - src.visualization - INFO - Saved plot: output\model_comparison_medium.png
+2026-05-02 17:29:13,135 - src.visualization - INFO - Saved plot: output\feature_importance_medium_RandomForest.png
+2026-05-02 17:29:13,395 - src.visualization - INFO - Saved plot: output\feature_importance_medium_GBDT.png
+2026-05-02 17:29:13,656 - src.visualization - INFO - Saved plot: output\feature_importance_medium_LightGBM.png
+2026-05-02 17:29:13,931 - src.visualization - INFO - Saved plot: output\feature_importance_medium_XGBoost.png
+2026-05-02 17:29:14,213 - src.visualization - INFO - Saved plot: output\feature_importance_medium_Ridge.png
+2026-05-02 17:29:14,214 - src.result_analysis - INFO - 
+MEDIUM Group Results:
+2026-05-02 17:29:14,219 - src.result_analysis - INFO -         mape  wape      rmse      mae   r2             model  improvement_vs_baseline
+2.958000e+01 29.58       NaN      NaN  NaN   Ensemble_Median                    59.38
+2.968000e+01 29.68       NaN      NaN  NaN      Ensemble_Avg                    59.24
+2.968000e+01 29.68       NaN      NaN  NaN Ensemble_Weighted                    59.24
+2.968000e+01 29.68       NaN      NaN  NaN  Ensemble_Trimmed                    59.24
+1.890526e+19 30.08 132658.60 61670.45 0.87           XGBoost                    58.70
+1.771384e+19 30.57 136457.87 62674.23 0.86      RandomForest                    58.03
+1.743428e+19 30.83 138065.68 63207.22 0.85          LightGBM                    57.67
+1.880249e+19 31.37 140419.40 64323.40 0.85              GBDT                    56.92
+1.267086e+19 36.03 148902.25 73875.45 0.83             Ridge                    50.52
+7.420000e+01 74.20       NaN      NaN  NaN           Prophet                    -1.88
+8.105000e+01 81.05       NaN      NaN  NaN       Transformer                   -11.29
+8.486000e+01 84.86       NaN      NaN  NaN              LSTM                   -16.53
+2026-05-02 17:29:14,219 - __main__ - INFO - Group medium completed
+2026-05-02 17:29:23,764 - src.group_preparation - INFO - Features prepared: 32
+2026-05-02 17:29:26,779 - src.models.base - INFO - Baseline: mean=121.48%, seasonal_naive=96.45%, best=96.45%
+2026-05-02 17:29:26,794 - src.modeling - INFO - [low/RandomForest] Using tuned params from tuned_params.json
+2026-05-02 17:29:46,754 - src.modeling - INFO - [low/RandomForest] Test WAPE=67.62%
+2026-05-02 17:29:46,754 - src.modeling - INFO - [low/GBDT] Using tuned params from tuned_params.json
+2026-05-02 17:40:46,074 - src.modeling - INFO - [low/GBDT] Test WAPE=93.21%
+2026-05-02 17:40:46,078 - src.modeling - INFO - [low/LightGBM] Using tuned params from tuned_params.json
+2026-05-02 17:40:50,215 - src.modeling - INFO - [low/LightGBM] Test WAPE=176.45%
+2026-05-02 17:40:50,215 - src.modeling - INFO - [low/XGBoost] Using tuned params from tuned_params.json
+2026-05-02 17:40:52,783 - src.modeling - INFO - [low/XGBoost] Test WAPE=124.19%
+2026-05-02 17:40:52,925 - src.modeling - INFO - [low/Ridge] Test WAPE=72.17%
+2026-05-02 17:40:53,197 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:40:53,392 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:40:53,590 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:40:53,794 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:40:53,919 - prophet - INFO - n_changepoints greater than number of observations. Using 21.
+2026-05-02 17:40:53,924 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:40:54,008 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:40:54,146 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:40:54,244 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:40:54,405 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:40:54,623 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:40:54,758 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:40:54,928 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:40:55,076 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:40:55,227 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:40:55,386 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:40:55,532 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:40:55,665 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:40:55,892 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:40:56,065 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:40:56,245 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:40:56,368 - prophet - INFO - n_changepoints greater than number of observations. Using 22.
+2026-05-02 17:40:56,378 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:40:56,490 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:40:56,639 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:40:56,839 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:40:56,964 - prophet - INFO - n_changepoints greater than number of observations. Using 14.
+2026-05-02 17:40:56,969 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:03,845 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:04,008 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:04,158 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:04,312 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:04,441 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:04,572 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:04,656 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:04,795 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:04,900 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:05,022 - prophet - INFO - n_changepoints greater than number of observations. Using 24.
+2026-05-02 17:41:05,029 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:05,110 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:05,223 - prophet - INFO - n_changepoints greater than number of observations. Using 22.
+2026-05-02 17:41:05,230 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:05,294 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:05,436 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:05,603 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:05,739 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:05,875 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:06,012 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:06,124 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:06,268 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:06,406 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:06,550 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:06,726 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:06,863 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:07,107 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:07,243 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:07,347 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:07,469 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:07,556 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:07,681 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:07,860 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:07,997 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:08,280 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:08,402 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:08,498 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:08,637 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:08,850 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:08,986 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:09,123 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:09,251 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:09,430 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:09,557 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:09,680 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:09,802 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:09,933 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:10,049 - prophet - INFO - n_changepoints greater than number of observations. Using 23.
+2026-05-02 17:41:10,054 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:10,135 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:10,246 - prophet - INFO - n_changepoints greater than number of observations. Using 24.
+2026-05-02 17:41:10,251 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:10,332 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:10,449 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:10,551 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:10,669 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:10,765 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:10,892 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:11,114 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:11,226 - prophet - INFO - n_changepoints greater than number of observations. Using 24.
+2026-05-02 17:41:11,232 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:11,345 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:11,476 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:11,606 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:11,728 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:11,893 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:12,025 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:12,167 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:12,287 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:12,414 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:12,543 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:12,786 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:12,916 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:13,109 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:13,226 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:13,344 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:13,470 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:13,565 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:13,690 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 17:41:13,903 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 17:41:13,943 - src.modeling - INFO - [low/Prophet] Test WAPE=178.71%
+2026-05-02 17:41:17,062 - src.models.dl_models - INFO - Training LSTM (seq_length=12)
+2026-05-02 17:41:26,396 - src.models.dl_models - INFO - Samples: Train=174,168, Test=15,261
+2026-05-02 17:41:27,034 - src.models.dl_models - INFO - Using device: cuda
+2026-05-02 17:41:27,080 - src.models.dl_models - INFO - Model parameters: 847,617
+2026-05-02 17:44:36,487 - src.models.dl_models - INFO - DL early stop at epoch 32, best val loss 0.950670
+2026-05-02 17:44:36,784 - src.models.dl_models - INFO - LSTM Test MAPE=11212876273627955200.00% WAPE=96.24%
+2026-05-02 17:44:36,799 - src.modeling - INFO - [low/LSTM] Test WAPE=96.24%
+2026-05-02 17:44:37,007 - src.models.dl_models - INFO - Training TRANSFORMER (seq_length=12)
+2026-05-02 17:44:45,692 - src.models.dl_models - INFO - Samples: Train=174,168, Test=15,261
+2026-05-02 17:44:46,288 - src.models.dl_models - INFO - Using device: cuda
+2026-05-02 17:44:46,326 - src.models.dl_models - INFO - Model parameters: 276,481
+2026-05-02 17:52:47,974 - src.models.dl_models - INFO - DL early stop at epoch 68, best val loss 0.896827
+2026-05-02 17:52:48,100 - src.models.dl_models - INFO - TRANSFORMER Test MAPE=12259946350719795200.00% WAPE=92.28%
+2026-05-02 17:52:48,127 - src.modeling - INFO - [low/Transformer] Test WAPE=92.28%
+2026-05-02 17:52:48,137 - src.models.ensemble - INFO - Fusion results: avg=99.36%, weighted=99.36%, median=83.51%, trimmed=85.98%
+2026-05-02 17:52:48,554 - src.result_analysis - INFO - Saved results: output\results_low.csv
+2026-05-02 17:52:48,556 - src.result_analysis - INFO - [low] Best model: RandomForest (WAPE=67.62%)
+2026-05-02 17:52:49,695 - src.visualization - INFO - Saved plot: output\model_comparison_low.png
+2026-05-02 17:52:50,661 - src.visualization - INFO - Saved plot: output\feature_importance_low_RandomForest.png
+2026-05-02 17:52:51,138 - src.visualization - INFO - Saved plot: output\feature_importance_low_GBDT.png
+2026-05-02 17:52:51,585 - src.visualization - INFO - Saved plot: output\feature_importance_low_LightGBM.png
+2026-05-02 17:52:52,010 - src.visualization - INFO - Saved plot: output\feature_importance_low_XGBoost.png
+2026-05-02 17:52:52,451 - src.visualization - INFO - Saved plot: output\feature_importance_low_Ridge.png
+2026-05-02 17:52:52,451 - src.result_analysis - INFO - 
+LOW Group Results:
+2026-05-02 17:52:52,460 - src.result_analysis - INFO -         mape   wape      rmse       mae    r2             model  improvement_vs_baseline
+1.198775e+19  67.62 164210.41  42012.93  0.38      RandomForest                    29.89
+1.705506e+19  72.17 174789.81  44839.34  0.30             Ridge                    25.17
+8.351000e+01  83.51       NaN       NaN   NaN   Ensemble_Median                    13.41
+8.598000e+01  85.98       NaN       NaN   NaN  Ensemble_Trimmed                    10.86
+9.228000e+01  92.28       NaN       NaN   NaN       Transformer                     4.33
+2.228743e+19  93.21 178780.07  57909.77  0.27              GBDT                     3.36
+9.624000e+01  96.24       NaN       NaN   NaN              LSTM                     0.22
+9.936000e+01  99.36       NaN       NaN   NaN      Ensemble_Avg                    -3.02
+9.936000e+01  99.36       NaN       NaN   NaN Ensemble_Weighted                    -3.02
+2.287271e+19 124.19 196479.85  77157.12  0.11           XGBoost                   -28.76
+3.836418e+19 176.45 226092.36 109623.55 -0.17          LightGBM                   -82.94
+1.787100e+02 178.71       NaN       NaN   NaN           Prophet                   -85.28
+2026-05-02 17:52:52,462 - __main__ - INFO - Group low completed
+2026-05-02 17:52:52,462 - __main__ - INFO - ============================================================
+2026-05-02 17:52:52,462 - __main__ - INFO - Stage 4-5: Short-Term Modeling
+2026-05-02 17:52:52,462 - __main__ - INFO - ============================================================
+2026-05-02 17:52:54,355 - src.short_term_modeling - INFO - [short] Rows=21,060, combos=1,706
+2026-05-02 17:53:01,503 - src.short_term_modeling - INFO - [short] Best baseline WAPE=75.11%
+2026-05-02 17:53:01,506 - src.short_term_modeling - INFO - [short/RandomForest] Tuning on strict train/val...
+2026-05-02 17:54:08,170 - src.short_term_modeling - INFO - [short/RandomForest] Test WAPE=53.16%
+2026-05-02 17:54:08,170 - src.short_term_modeling - INFO - [short/GBDT] Tuning on strict train/val...
+2026-05-02 18:06:59,781 - src.short_term_modeling - INFO - [short/GBDT] Test WAPE=54.16%
+2026-05-02 18:06:59,781 - src.short_term_modeling - INFO - [short/LightGBM] Tuning on strict train/val...
+2026-05-02 18:07:19,964 - src.short_term_modeling - INFO - [short/LightGBM] Test WAPE=54.22%
+2026-05-02 18:07:19,964 - src.short_term_modeling - INFO - [short/XGBoost] Tuning on strict train/val...
+2026-05-02 18:07:51,177 - src.short_term_modeling - INFO - [short/XGBoost] Test WAPE=53.56%
+2026-05-02 18:07:51,198 - src.short_term_modeling - INFO - [short/Ridge] Test WAPE=59.32%
+2026-05-02 18:07:51,308 - prophet - INFO - n_changepoints greater than number of observations. Using 13.
+2026-05-02 18:07:51,313 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:07:52,741 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:07:52,871 - prophet - INFO - n_changepoints greater than number of observations. Using 9.
+2026-05-02 18:07:52,883 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:07:55,641 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:07:55,805 - prophet - INFO - n_changepoints greater than number of observations. Using 5.
+2026-05-02 18:07:55,813 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:07:56,218 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:07:56,389 - prophet - INFO - n_changepoints greater than number of observations. Using 4.
+2026-05-02 18:07:56,394 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:07:56,466 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:07:56,625 - prophet - INFO - n_changepoints greater than number of observations. Using 12.
+2026-05-02 18:07:56,637 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:08:02,934 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:08:03,097 - prophet - INFO - n_changepoints greater than number of observations. Using 9.
+2026-05-02 18:08:03,109 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:08:03,212 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:08:03,362 - prophet - INFO - n_changepoints greater than number of observations. Using 5.
+2026-05-02 18:08:03,373 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:08:07,221 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:08:07,331 - prophet - INFO - n_changepoints greater than number of observations. Using 5.
+2026-05-02 18:08:07,346 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:08:07,471 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:08:07,611 - prophet - INFO - n_changepoints greater than number of observations. Using 11.
+2026-05-02 18:08:07,622 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:08:08,574 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:08:08,710 - prophet - INFO - n_changepoints greater than number of observations. Using 13.
+2026-05-02 18:08:08,720 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:08:15,927 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:08:16,111 - prophet - INFO - n_changepoints greater than number of observations. Using 12.
+2026-05-02 18:08:16,123 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:08:22,909 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:08:23,010 - prophet - INFO - n_changepoints greater than number of observations. Using 5.
+2026-05-02 18:08:23,013 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:08:23,907 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:08:24,007 - prophet - INFO - n_changepoints greater than number of observations. Using 11.
+2026-05-02 18:08:24,013 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:08:24,520 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:08:24,622 - prophet - INFO - n_changepoints greater than number of observations. Using 10.
+2026-05-02 18:08:24,628 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:08:30,401 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:08:30,507 - prophet - INFO - n_changepoints greater than number of observations. Using 11.
+2026-05-02 18:08:30,512 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:08:30,741 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:08:30,836 - prophet - INFO - n_changepoints greater than number of observations. Using 11.
+2026-05-02 18:08:30,846 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:08:31,207 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:08:31,300 - prophet - INFO - n_changepoints greater than number of observations. Using 13.
+2026-05-02 18:08:31,307 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:08:38,335 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:08:38,429 - prophet - INFO - n_changepoints greater than number of observations. Using 11.
+2026-05-02 18:08:38,434 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:08:44,509 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:08:44,668 - prophet - INFO - n_changepoints greater than number of observations. Using 8.
+2026-05-02 18:08:44,678 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:08:49,876 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:08:50,052 - prophet - INFO - n_changepoints greater than number of observations. Using 11.
+2026-05-02 18:08:50,068 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:08:55,859 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:08:56,031 - prophet - INFO - n_changepoints greater than number of observations. Using 11.
+2026-05-02 18:08:56,039 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:01,504 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:01,661 - prophet - INFO - n_changepoints greater than number of observations. Using 13.
+2026-05-02 18:09:01,674 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:08,060 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:08,208 - prophet - INFO - n_changepoints greater than number of observations. Using 6.
+2026-05-02 18:09:08,216 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:08,305 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:08,452 - prophet - INFO - n_changepoints greater than number of observations. Using 13.
+2026-05-02 18:09:08,457 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:09,014 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:09,150 - prophet - INFO - n_changepoints greater than number of observations. Using 8.
+2026-05-02 18:09:09,160 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:13,754 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:13,912 - prophet - INFO - n_changepoints greater than number of observations. Using 6.
+2026-05-02 18:09:13,927 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:14,125 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:14,269 - prophet - INFO - n_changepoints greater than number of observations. Using 3.
+2026-05-02 18:09:14,279 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:17,528 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:17,652 - prophet - INFO - n_changepoints greater than number of observations. Using 7.
+2026-05-02 18:09:17,658 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:21,969 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:22,106 - prophet - INFO - n_changepoints greater than number of observations. Using 9.
+2026-05-02 18:09:22,116 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:22,904 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:23,066 - prophet - INFO - n_changepoints greater than number of observations. Using 11.
+2026-05-02 18:09:23,077 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:23,654 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:23,782 - prophet - INFO - n_changepoints greater than number of observations. Using 11.
+2026-05-02 18:09:23,787 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:26,429 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:26,562 - prophet - INFO - n_changepoints greater than number of observations. Using 5.
+2026-05-02 18:09:26,569 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:26,686 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:26,833 - prophet - INFO - n_changepoints greater than number of observations. Using 6.
+2026-05-02 18:09:26,838 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:27,341 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:27,472 - prophet - INFO - n_changepoints greater than number of observations. Using 4.
+2026-05-02 18:09:27,482 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:27,713 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:27,828 - prophet - INFO - n_changepoints greater than number of observations. Using 11.
+2026-05-02 18:09:27,843 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:33,080 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:33,256 - prophet - INFO - n_changepoints greater than number of observations. Using 12.
+2026-05-02 18:09:33,266 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:34,637 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:34,796 - prophet - INFO - n_changepoints greater than number of observations. Using 8.
+2026-05-02 18:09:34,810 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:39,041 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:39,182 - prophet - INFO - n_changepoints greater than number of observations. Using 11.
+2026-05-02 18:09:39,197 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:44,493 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:44,651 - prophet - INFO - n_changepoints greater than number of observations. Using 11.
+2026-05-02 18:09:44,660 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:49,958 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:50,066 - prophet - INFO - n_changepoints greater than number of observations. Using 9.
+2026-05-02 18:09:50,076 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:50,336 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:50,497 - prophet - INFO - n_changepoints greater than number of observations. Using 8.
+2026-05-02 18:09:50,506 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:55,087 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:55,236 - prophet - INFO - n_changepoints greater than number of observations. Using 10.
+2026-05-02 18:09:55,248 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:55,480 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:55,632 - prophet - INFO - n_changepoints greater than number of observations. Using 6.
+2026-05-02 18:09:55,639 - cmdstanpy - INFO - Chain [1] start processing
+2026-05-02 18:09:55,744 - cmdstanpy - INFO - Chain [1] done processing
+2026-05-02 18:09:55,833 - src.short_term_modeling - INFO - [short/Prophet] Test WAPE=1897.88%
+2026-05-02 18:09:56,593 - src.models.dl_models - INFO - Training LSTM (seq_length=4)
+2026-05-02 18:10:01,282 - src.models.dl_models - INFO - Samples: Train=10,502, Test=269
+2026-05-02 18:10:01,317 - src.models.dl_models - INFO - Using device: cuda
+2026-05-02 18:10:01,346 - src.models.dl_models - INFO - Model parameters: 847,617
+2026-05-02 18:11:35,247 - src.models.dl_models - INFO - DL early stop at epoch 32, best val loss 0.545778
+2026-05-02 18:11:35,277 - src.models.dl_models - INFO - LSTM Test MAPE=25657679359770624000.00% WAPE=121.23%
+2026-05-02 18:11:35,277 - src.short_term_modeling - INFO - [short/LSTM] Test WAPE=121.23%
+2026-05-02 18:11:35,299 - src.models.dl_models - INFO - Training TRANSFORMER (seq_length=4)
+2026-05-02 18:11:40,042 - src.models.dl_models - INFO - Samples: Train=10,502, Test=269
+2026-05-02 18:11:40,068 - src.models.dl_models - INFO - Using device: cuda
+2026-05-02 18:11:40,102 - src.models.dl_models - INFO - Model parameters: 276,481
+2026-05-02 18:17:05,647 - src.models.dl_models - INFO - DL early stop at epoch 91, best val loss 0.499336
+2026-05-02 18:17:05,674 - src.models.dl_models - INFO - TRANSFORMER Test MAPE=17184787780547379200.00% WAPE=122.50%
+2026-05-02 18:17:05,674 - src.short_term_modeling - INFO - [short/Transformer] Test WAPE=122.50%
+2026-05-02 18:17:05,678 - src.models.ensemble - INFO - Fusion results: avg=53.58%, weighted=58.49%, median=53.04%, trimmed=53.17%
+2026-05-02 18:17:05,689 - src.short_term_modeling - INFO - Saved short-term results: output\results_short.csv
+2026-05-02 18:17:05,689 - src.short_term_modeling - INFO - [short] Best model: Ensemble_Median (WAPE=53.04%)
+2026-05-02 18:17:05,704 - src.short_term_modeling - INFO - 
+SHORT Group Results:
+                 model    wape         mape      rmse      mae   r2  improvement_vs_baseline
+       Ensemble_Median   53.04 5.304000e+01       NaN      NaN  NaN                    29.39
+          RandomForest   53.16 4.182430e+18 113654.29 30256.75 0.72                    29.22
+      Ensemble_Trimmed   53.17 5.317000e+01       NaN      NaN  NaN                    29.21
+               XGBoost   53.56 4.760554e+18 107870.60 30481.42 0.75                    28.70
+          Ensemble_Avg   53.58 5.358000e+01       NaN      NaN  NaN                    28.66
+                  GBDT   54.16 8.153554e+18 114453.89 30827.04 0.71                    27.89
+              LightGBM   54.22 4.848882e+18 115284.32 30859.93 0.71                    27.81
+     Ensemble_Weighted   58.49 5.849000e+01       NaN      NaN  NaN                    22.12
+                 Ridge   59.32 8.305783e+18 115160.54 33762.79 0.71                    21.02
+   Baseline_MovingAvg3   75.11 7.511000e+01       NaN      NaN  NaN                     0.00
+         Baseline_Mean   77.05 7.705000e+01       NaN      NaN  NaN                    -2.58
+Baseline_SeasonalNaive   81.33 8.133000e+01       NaN      NaN  NaN                    -8.28
+    Baseline_LastValue   83.74 8.374000e+01       NaN      NaN  NaN                   -11.49
+                  LSTM  121.23 1.212300e+02       NaN      NaN  NaN                   -61.40
+           Transformer  122.50 1.225000e+02       NaN      NaN  NaN                   -63.10
+               Prophet 1897.88 1.897880e+03       NaN      NaN  NaN                 -2426.83
+2026-05-02 18:17:06,640 - src.visualization - INFO - Saved plot: output\model_comparison_short.png
+2026-05-02 18:17:07,563 - src.visualization - INFO - Saved plot: output\feature_importance_short_RandomForest.png
+2026-05-02 18:17:08,156 - src.visualization - INFO - Saved plot: output\feature_importance_short_GBDT.png
+2026-05-02 18:17:08,764 - src.visualization - INFO - Saved plot: output\feature_importance_short_LightGBM.png
+2026-05-02 18:17:09,338 - src.visualization - INFO - Saved plot: output\feature_importance_short_XGBoost.png
+2026-05-02 18:17:09,914 - src.visualization - INFO - Saved plot: output\feature_importance_short_Ridge.png
+2026-05-02 18:17:10,026 - __main__ - INFO - Short-term modeling completed
+2026-05-02 18:17:12,431 - __main__ - INFO - Saved all models: output\all_models.pkl
+2026-05-02 18:17:12,431 - __main__ - INFO - ============================================================
+2026-05-02 18:17:12,431 - __main__ - INFO - Pipeline completed!
+2026-05-02 18:17:12,431 - __main__ - INFO - ============================================================
+2026-05-02 19:34:43,583 - __main__ - INFO - ============================================================
+2026-05-02 19:34:43,584 - __main__ - INFO - Stage 1: Data Processing
+2026-05-02 19:34:43,584 - __main__ - INFO - ============================================================
+2026-05-02 19:34:43,584 - src.data_processing - INFO - Step 0: Load raw data
+2026-05-02 19:34:45,195 - src.data_processing - INFO - Step 1: Remove invalid date rows
+2026-05-02 19:34:45,974 - src.data_processing - INFO - Step 2: Clamp negative RSV
+2026-05-02 19:34:46,267 - src.data_processing - INFO - Step 3: Deduplicate daily
+2026-05-02 19:34:52,689 - src.data_processing - INFO - Step 4: Aggregate monthly
+2026-05-02 19:34:53,844 - src.data_processing - INFO - Step 5: Check missing months
+2026-05-02 19:35:05,082 - src.data_processing - INFO - Step 5.1: Drop high missing-rate pairs
+2026-05-02 19:35:05,189 - src.data_processing - INFO - Step 6: Fill missing months
+2026-05-02 19:35:52,196 - src.data_processing - INFO - Step 7: Enrich with raw categorical features
+2026-05-02 19:35:58,915 - src.data_processing - INFO - Step 8: Add holiday features
+2026-05-02 19:42:36,441 - __main__ - INFO - Saved processed data: output/monthly_aggregated_sales_predict.parquet
+2026-05-02 19:42:36,441 - __main__ - INFO - ============================================================
+2026-05-02 19:42:36,441 - __main__ - INFO - Stage 2: Clustering
+2026-05-02 19:42:36,441 - __main__ - INFO - ============================================================
+2026-05-02 19:42:36,441 - src.clustering - INFO - Evaluating time spans...
+2026-05-02 19:42:38,712 - src.clustering - INFO - Total combos: 9288, Long: 7582, Short: 1706
+2026-05-02 19:42:39,574 - src.clustering - INFO - Extracting STL features for long-term series...
+2026-05-02 19:43:12,767 - src.clustering - INFO - Cluster distribution:
+predictability_level
+low       3791
+medium    2274
+short     1706
+high      1517
+Name: count, dtype: int64
+2026-05-02 19:43:12,767 - src.clustering - INFO - Thresholds: low/medium=50.83, medium/high=71.42
+2026-05-02 19:43:12,889 - __main__ - INFO - Saved clusters: output/weighted_score_clusters.csv
+2026-05-02 19:43:14,214 - __main__ - INFO - Saved predict data: output/monthly_aggregated_sales_predict.parquet
+2026-05-02 19:43:14,214 - __main__ - INFO - ============================================================
+2026-05-02 19:43:14,215 - __main__ - INFO - Stage 3-5: Group Preparation -> Modeling -> Result Analysis
+2026-05-02 19:43:14,215 - __main__ - INFO - ============================================================
+2026-05-02 19:43:17,796 - src.group_preparation - INFO - Features prepared: 32
+2026-05-02 19:43:19,126 - src.models.base - INFO - Baseline: mean=53.23%, seasonal_naive=52.11%, best=52.11%
+2026-05-02 19:43:19,126 - src.modeling - INFO - [high/RandomForest] Using tuned params from tuned_params.json
+2026-05-02 19:43:24,229 - src.modeling - INFO - [high/RandomForest] Test WAPE=24.96%
+2026-05-02 19:43:24,231 - src.modeling - INFO - [high/GBDT] Using tuned params from tuned_params.json
+2026-05-02 19:44:06,636 - src.modeling - INFO - [high/GBDT] Test WAPE=25.79%
+2026-05-02 19:44:06,636 - src.modeling - INFO - [high/LightGBM] Using tuned params from tuned_params.json
+2026-05-02 19:44:07,986 - src.modeling - INFO - [high/LightGBM] Test WAPE=25.58%
+2026-05-02 19:44:07,988 - src.modeling - INFO - [high/XGBoost] Using tuned params from tuned_params.json
+2026-05-02 19:44:09,310 - src.modeling - INFO - [high/XGBoost] Test WAPE=26.31%
+2026-05-02 19:44:09,399 - src.modeling - INFO - [high/Ridge] Test WAPE=29.34%
+2026-05-02 19:44:09,440 - src.models.dl_models - INFO - Training LSTM (seq_length=12)
+2026-05-02 19:44:12,287 - src.models.dl_models - INFO - Samples: Train=33,255, Test=1,338
+2026-05-02 19:44:12,457 - src.models.dl_models - INFO - Using device: cuda
+2026-05-02 19:44:12,497 - src.models.dl_models - INFO - Model parameters: 847,617
+2026-05-02 19:44:34,113 - src.models.dl_models - INFO - DL early stop at epoch 16, best val loss 1.335808
+2026-05-02 19:44:34,162 - src.models.dl_models - INFO - LSTM Test MAPE=441.28% WAPE=70.25%
+2026-05-02 19:44:34,165 - src.modeling - INFO - [high/LSTM] Test WAPE=70.25%
+2026-05-02 19:44:34,202 - src.models.dl_models - INFO - Training TRANSFORMER (seq_length=12)
+2026-05-02 19:44:37,008 - src.models.dl_models - INFO - Samples: Train=33,255, Test=1,338
+2026-05-02 19:44:37,139 - src.models.dl_models - INFO - Using device: cuda
+2026-05-02 19:44:37,186 - src.models.dl_models - INFO - Model parameters: 276,481
+2026-05-02 19:44:51,715 - src.models.dl_models - INFO - DL early stop at epoch 16, best val loss 1.264141
+2026-05-02 19:44:51,725 - src.models.dl_models - INFO - TRANSFORMER Test MAPE=121.11% WAPE=66.62%
+2026-05-02 19:44:51,725 - src.modeling - INFO - [high/Transformer] Test WAPE=66.62%
+2026-05-02 19:44:51,734 - src.models.ensemble - INFO - Fusion results: avg=25.07%, weighted=25.07%, median=25.18%, trimmed=25.06%
+2026-05-02 19:44:51,757 - src.result_analysis - INFO - Saved results: output\results_high.csv
+2026-05-02 19:44:51,757 - src.result_analysis - INFO - [high] Best model: RandomForest (WAPE=24.96%)
+2026-05-02 19:44:52,919 - src.visualization - INFO - Saved plot: output\model_comparison_high.png
+2026-05-02 19:44:53,412 - src.visualization - INFO - Saved plot: output\feature_importance_high_RandomForest.png
+2026-05-02 19:44:53,693 - src.visualization - INFO - Saved plot: output\feature_importance_high_GBDT.png
+2026-05-02 19:44:53,988 - src.visualization - INFO - Saved plot: output\feature_importance_high_LightGBM.png
+2026-05-02 19:44:54,257 - src.visualization - INFO - Saved plot: output\feature_importance_high_XGBoost.png
+2026-05-02 19:44:54,554 - src.visualization - INFO - Saved plot: output\feature_importance_high_Ridge.png
+2026-05-02 19:44:54,555 - src.result_analysis - INFO - 
+HIGH Group Results:
+2026-05-02 19:44:54,560 - src.result_analysis - INFO -   mape  wape      rmse       mae   r2             model  improvement_vs_baseline
+ 79.07 24.96 156400.29  98145.71 0.84      RandomForest                    52.09
+ 25.06 25.06       NaN       NaN  NaN  Ensemble_Trimmed                    51.91
+ 25.07 25.07       NaN       NaN  NaN Ensemble_Weighted                    51.90
+ 25.07 25.07       NaN       NaN  NaN      Ensemble_Avg                    51.90
+ 25.18 25.18       NaN       NaN  NaN   Ensemble_Median                    51.68
+105.11 25.58 158100.38 100560.37 0.83          LightGBM                    50.91
+111.29 25.79 157731.75 101407.04 0.84              GBDT                    50.50
+102.25 26.31 160149.53 103444.39 0.83           XGBoost                    49.51
+ 90.64 29.34 177657.39 115341.34 0.79             Ridge                    43.70
+ 66.62 66.62       NaN       NaN  NaN       Transformer                   -27.85
+ 70.25 70.25       NaN       NaN  NaN              LSTM                   -34.82
+2026-05-02 19:44:54,560 - __main__ - INFO - Group high completed
+2026-05-02 19:45:00,200 - src.group_preparation - INFO - Features prepared: 32
+2026-05-02 19:45:02,107 - src.models.base - INFO - Baseline: mean=85.23%, seasonal_naive=72.82%, best=72.82%
+2026-05-02 19:45:02,107 - src.modeling - INFO - [medium/RandomForest] Using tuned params from tuned_params.json
+2026-05-02 19:45:12,992 - src.modeling - INFO - [medium/RandomForest] Test WAPE=30.57%
+2026-05-02 19:45:12,995 - src.modeling - INFO - [medium/GBDT] Using tuned params from tuned_params.json
+2026-05-02 19:46:25,915 - src.modeling - INFO - [medium/GBDT] Test WAPE=31.37%
+2026-05-02 19:46:25,916 - src.modeling - INFO - [medium/LightGBM] Using tuned params from tuned_params.json
+2026-05-02 19:46:27,674 - src.modeling - INFO - [medium/LightGBM] Test WAPE=30.83%
+2026-05-02 19:46:27,675 - src.modeling - INFO - [medium/XGBoost] Using tuned params from tuned_params.json
+2026-05-02 19:46:29,578 - src.modeling - INFO - [medium/XGBoost] Test WAPE=30.08%
+2026-05-02 19:46:29,643 - src.modeling - INFO - [medium/Ridge] Test WAPE=36.03%
+2026-05-02 19:46:29,750 - src.models.dl_models - INFO - Training LSTM (seq_length=12)
+2026-05-02 19:46:35,006 - src.models.dl_models - INFO - Samples: Train=81,052, Test=5,823
+2026-05-02 19:46:36,118 - src.models.dl_models - INFO - Using device: cuda
+2026-05-02 19:46:36,149 - src.models.dl_models - INFO - Model parameters: 847,617
+2026-05-02 19:47:41,776 - src.models.dl_models - INFO - DL early stop at epoch 16, best val loss 1.417875
+2026-05-02 19:47:41,896 - src.models.dl_models - INFO - LSTM Test MAPE=1277674387406848000.00% WAPE=84.86%
+2026-05-02 19:47:41,906 - src.modeling - INFO - [medium/LSTM] Test WAPE=84.86%
+2026-05-02 19:47:42,058 - src.models.dl_models - INFO - Training TRANSFORMER (seq_length=12)
+2026-05-02 19:47:50,613 - src.models.dl_models - INFO - Samples: Train=81,052, Test=5,823
+2026-05-02 19:47:51,049 - src.models.dl_models - INFO - Using device: cuda
+2026-05-02 19:47:51,068 - src.models.dl_models - INFO - Model parameters: 276,481
+2026-05-02 19:49:07,890 - src.models.dl_models - INFO - DL early stop at epoch 16, best val loss 1.492226
+2026-05-02 19:49:07,950 - src.models.dl_models - INFO - TRANSFORMER Test MAPE=4417159115571200000.00% WAPE=81.05%
+2026-05-02 19:49:07,959 - src.modeling - INFO - [medium/Transformer] Test WAPE=81.05%
+2026-05-02 19:49:07,971 - src.models.ensemble - INFO - Fusion results: avg=29.68%, weighted=29.68%, median=29.58%, trimmed=29.68%
+2026-05-02 19:49:08,086 - src.result_analysis - INFO - Saved results: output\results_medium.csv
+2026-05-02 19:49:08,086 - src.result_analysis - INFO - [medium] Best model: Ensemble_Median (WAPE=29.58%)
+2026-05-02 19:49:08,986 - src.visualization - INFO - Saved plot: output\model_comparison_medium.png
+2026-05-02 19:49:09,813 - src.visualization - INFO - Saved plot: output\feature_importance_medium_RandomForest.png
+2026-05-02 19:49:10,309 - src.visualization - INFO - Saved plot: output\feature_importance_medium_GBDT.png
+2026-05-02 19:49:10,790 - src.visualization - INFO - Saved plot: output\feature_importance_medium_LightGBM.png
+2026-05-02 19:49:11,280 - src.visualization - INFO - Saved plot: output\feature_importance_medium_XGBoost.png
+2026-05-02 19:49:11,754 - src.visualization - INFO - Saved plot: output\feature_importance_medium_Ridge.png
+2026-05-02 19:49:11,754 - src.result_analysis - INFO - 
+MEDIUM Group Results:
+2026-05-02 19:49:11,764 - src.result_analysis - INFO -         mape  wape      rmse      mae   r2             model  improvement_vs_baseline
+2.958000e+01 29.58       NaN      NaN  NaN   Ensemble_Median                    59.38
+2.968000e+01 29.68       NaN      NaN  NaN      Ensemble_Avg                    59.24
+2.968000e+01 29.68       NaN      NaN  NaN Ensemble_Weighted                    59.24
+2.968000e+01 29.68       NaN      NaN  NaN  Ensemble_Trimmed                    59.24
+1.890526e+19 30.08 132658.60 61670.45 0.87           XGBoost                    58.70
+1.771384e+19 30.57 136457.87 62674.23 0.86      RandomForest                    58.03
+1.743428e+19 30.83 138065.68 63207.22 0.85          LightGBM                    57.67
+1.880249e+19 31.37 140419.40 64323.40 0.85              GBDT                    56.92
+1.267086e+19 36.03 148902.25 73875.45 0.83             Ridge                    50.52
+8.105000e+01 81.05       NaN      NaN  NaN       Transformer                   -11.29
+8.486000e+01 84.86       NaN      NaN  NaN              LSTM                   -16.53
+2026-05-02 19:49:11,764 - __main__ - INFO - Group medium completed
+2026-05-02 19:49:31,437 - src.group_preparation - INFO - Features prepared: 32
+2026-05-02 19:49:37,110 - src.models.base - INFO - Baseline: mean=121.48%, seasonal_naive=96.45%, best=96.45%
+2026-05-02 19:49:37,113 - src.modeling - INFO - [low/RandomForest] Using tuned params from tuned_params.json
+2026-05-02 19:49:37,114 - src.modeling - INFO - [low/RandomForest] Low group uses notebook-style strict training
+2026-05-02 19:49:53,162 - src.modeling - INFO - [low/RandomForest] Test WAPE=59.79%
+2026-05-02 19:49:53,162 - src.modeling - INFO - [low/GBDT] Using tuned params from tuned_params.json
+2026-05-02 19:49:53,162 - src.modeling - INFO - [low/GBDT] Low group uses notebook-style strict training
+2026-05-02 20:01:05,525 - src.modeling - INFO - [low/GBDT] Test WAPE=60.36%
+2026-05-02 20:01:05,530 - src.modeling - INFO - [low/LightGBM] Using tuned params from tuned_params.json
+2026-05-02 20:01:05,532 - src.modeling - INFO - [low/LightGBM] Low group uses notebook-style strict training
+2026-05-02 20:01:07,598 - src.modeling - INFO - [low/LightGBM] Test WAPE=67.67%
+2026-05-02 20:01:07,600 - src.modeling - INFO - [low/XGBoost] Using tuned params from tuned_params.json
+2026-05-02 20:01:07,600 - src.modeling - INFO - [low/XGBoost] Low group uses notebook-style strict training
+2026-05-02 20:01:09,428 - src.modeling - INFO - [low/XGBoost] Test WAPE=59.94%
+2026-05-02 20:01:09,536 - src.modeling - INFO - [low/Ridge] Test WAPE=72.17%
+2026-05-02 20:01:13,365 - src.models.dl_models - INFO - Training LSTM (seq_length=12)
+2026-05-02 20:01:29,662 - src.models.dl_models - INFO - Samples: Train=174,168, Test=15,261
+2026-05-02 20:01:30,629 - src.models.dl_models - INFO - Using device: cuda
+2026-05-02 20:01:30,641 - src.models.dl_models - INFO - Model parameters: 847,617
+2026-05-02 20:06:20,081 - src.models.dl_models - INFO - DL early stop at epoch 32, best val loss 0.950670
+2026-05-02 20:06:20,407 - src.models.dl_models - INFO - LSTM Test MAPE=11212876273627955200.00% WAPE=96.24%
+2026-05-02 20:06:20,430 - src.modeling - INFO - [low/LSTM] Test WAPE=96.24%
+2026-05-02 20:06:21,164 - src.models.dl_models - INFO - Training TRANSFORMER (seq_length=12)
+2026-05-02 20:06:37,736 - src.models.dl_models - INFO - Samples: Train=174,168, Test=15,261
+2026-05-02 20:06:38,675 - src.models.dl_models - INFO - Using device: cuda
+2026-05-02 20:06:38,720 - src.models.dl_models - INFO - Model parameters: 276,481
+2026-05-02 20:17:14,667 - src.models.dl_models - INFO - DL early stop at epoch 68, best val loss 0.896827
+2026-05-02 20:17:14,759 - src.models.dl_models - INFO - TRANSFORMER Test MAPE=12259946350719795200.00% WAPE=92.28%
+2026-05-02 20:17:14,795 - src.modeling - INFO - [low/Transformer] Test WAPE=92.28%
+2026-05-02 20:17:14,813 - src.models.ensemble - INFO - Fusion results: avg=62.21%, weighted=62.21%, median=59.83%, trimmed=60.28%
+2026-05-02 20:17:18,859 - src.result_analysis - INFO - Saved results: output\results_low.csv
+2026-05-02 20:17:18,862 - src.result_analysis - INFO - [low] Best model: RandomForest (WAPE=59.79%)
+2026-05-02 20:17:20,057 - src.visualization - INFO - Saved plot: output\model_comparison_low.png
+2026-05-02 20:17:21,126 - src.visualization - INFO - Saved plot: output\feature_importance_low_RandomForest.png
+2026-05-02 20:17:21,687 - src.visualization - INFO - Saved plot: output\feature_importance_low_GBDT.png
+2026-05-02 20:17:22,231 - src.visualization - INFO - Saved plot: output\feature_importance_low_LightGBM.png
+2026-05-02 20:17:22,812 - src.visualization - INFO - Saved plot: output\feature_importance_low_XGBoost.png
+2026-05-02 20:17:23,273 - src.visualization - INFO - Saved plot: output\feature_importance_low_Ridge.png
+2026-05-02 20:17:23,273 - src.result_analysis - INFO - 
+LOW Group Results:
+2026-05-02 20:17:23,283 - src.result_analysis - INFO -         mape  wape      rmse      mae   r2             model  improvement_vs_baseline
+9.353101e+18 59.79 163730.60 37149.31 0.38      RandomForest                    38.01
+5.983000e+01 59.83       NaN      NaN  NaN   Ensemble_Median                    37.97
+9.015443e+18 59.94 164939.80 37238.71 0.38           XGBoost                    37.86
+6.028000e+01 60.28       NaN      NaN  NaN  Ensemble_Trimmed                    37.50
+9.314705e+18 60.36 169804.21 37498.46 0.34              GBDT                    37.42
+6.221000e+01 62.21       NaN      NaN  NaN Ensemble_Weighted                    35.50
+6.221000e+01 62.21       NaN      NaN  NaN      Ensemble_Avg                    35.50
+9.094487e+18 67.67 177581.95 42043.11 0.28          LightGBM                    29.84
+1.705506e+19 72.17 174789.81 44839.34 0.30             Ridge                    25.17
+9.228000e+01 92.28       NaN      NaN  NaN       Transformer                     4.33
+9.624000e+01 96.24       NaN      NaN  NaN              LSTM                     0.22
+2026-05-02 20:17:23,289 - __main__ - INFO - Group low completed
+2026-05-02 20:17:23,289 - __main__ - INFO - ============================================================
+2026-05-02 20:17:23,289 - __main__ - INFO - Stage 4-5: Short-Term Modeling
+2026-05-02 20:17:23,289 - __main__ - INFO - ============================================================
+2026-05-02 20:17:25,450 - src.short_term_modeling - INFO - [short] Rows=21,060, combos=1,706
+2026-05-02 20:17:33,787 - src.short_term_modeling - INFO - [short] Best baseline WAPE=75.11%
+2026-05-02 20:17:33,787 - src.short_term_modeling - INFO - [short/RandomForest] Using tuned params from tuned_params.json
+2026-05-02 20:17:35,751 - src.short_term_modeling - INFO - [short/RandomForest] Test WAPE=53.16%
+2026-05-02 20:17:35,751 - src.short_term_modeling - INFO - [short/GBDT] Using tuned params from tuned_params.json
+2026-05-02 20:17:52,613 - src.short_term_modeling - INFO - [short/GBDT] Test WAPE=54.16%
+2026-05-02 20:17:52,616 - src.short_term_modeling - INFO - [short/LightGBM] Using tuned params from tuned_params.json
+2026-05-02 20:17:53,042 - src.short_term_modeling - INFO - [short/LightGBM] Test WAPE=54.22%
+2026-05-02 20:17:53,042 - src.short_term_modeling - INFO - [short/XGBoost] Using tuned params from tuned_params.json
+2026-05-02 20:17:53,621 - src.short_term_modeling - INFO - [short/XGBoost] Test WAPE=53.56%
+2026-05-02 20:17:53,702 - src.short_term_modeling - INFO - [short/Ridge] Test WAPE=59.32%
+2026-05-02 20:17:53,723 - src.models.dl_models - INFO - Training LSTM (seq_length=4)
+2026-05-02 20:17:57,964 - src.models.dl_models - INFO - Samples: Train=10,502, Test=269
+2026-05-02 20:17:58,001 - src.models.dl_models - INFO - Using device: cuda
+2026-05-02 20:17:58,018 - src.models.dl_models - INFO - Model parameters: 847,617
+2026-05-02 20:19:33,366 - src.models.dl_models - INFO - DL early stop at epoch 32, best val loss 0.545778
+2026-05-02 20:19:33,386 - src.models.dl_models - INFO - LSTM Test MAPE=25657679359770624000.00% WAPE=121.23%
+2026-05-02 20:19:33,386 - src.short_term_modeling - INFO - [short/LSTM] Test WAPE=121.23%
+2026-05-02 20:19:33,407 - src.models.dl_models - INFO - Training TRANSFORMER (seq_length=4)
+2026-05-02 20:19:37,389 - src.models.dl_models - INFO - Samples: Train=10,502, Test=269
+2026-05-02 20:19:37,402 - src.models.dl_models - INFO - Using device: cuda
+2026-05-02 20:19:37,425 - src.models.dl_models - INFO - Model parameters: 276,481
+2026-05-02 20:24:53,429 - src.models.dl_models - INFO - DL early stop at epoch 91, best val loss 0.499336
+2026-05-02 20:24:53,440 - src.models.dl_models - INFO - TRANSFORMER Test MAPE=17184787780547379200.00% WAPE=122.50%
+2026-05-02 20:24:53,445 - src.short_term_modeling - INFO - [short/Transformer] Test WAPE=122.50%
+2026-05-02 20:24:53,445 - src.models.ensemble - INFO - Fusion results: avg=53.58%, weighted=53.58%, median=53.04%, trimmed=53.17%
+2026-05-02 20:24:53,462 - src.short_term_modeling - INFO - Saved short-term results: output\results_short.csv
+2026-05-02 20:24:53,462 - src.short_term_modeling - INFO - [short] Best model: Ensemble_Median (WAPE=53.04%)
+2026-05-02 20:24:53,472 - src.short_term_modeling - INFO - 
+SHORT Group Results:
+                 model   wape         mape      rmse      mae   r2  improvement_vs_baseline
+       Ensemble_Median  53.04 5.304000e+01       NaN      NaN  NaN                    29.39
+          RandomForest  53.16 4.182430e+18 113654.29 30256.75 0.72                    29.22
+      Ensemble_Trimmed  53.17 5.317000e+01       NaN      NaN  NaN                    29.21
+               XGBoost  53.56 4.760554e+18 107870.60 30481.42 0.75                    28.70
+     Ensemble_Weighted  53.58 5.358000e+01       NaN      NaN  NaN                    28.66
+          Ensemble_Avg  53.58 5.358000e+01       NaN      NaN  NaN                    28.66
+                  GBDT  54.16 8.153554e+18 114453.89 30827.04 0.71                    27.89
+              LightGBM  54.22 4.848882e+18 115284.32 30859.93 0.71                    27.81
+                 Ridge  59.32 8.305783e+18 115160.54 33762.79 0.71                    21.02
+   Baseline_MovingAvg3  75.11 7.511000e+01       NaN      NaN  NaN                     0.00
+         Baseline_Mean  77.05 7.705000e+01       NaN      NaN  NaN                    -2.58
+Baseline_SeasonalNaive  81.33 8.133000e+01       NaN      NaN  NaN                    -8.28
+    Baseline_LastValue  83.74 8.374000e+01       NaN      NaN  NaN                   -11.49
+                  LSTM 121.23 1.212300e+02       NaN      NaN  NaN                   -61.40
+           Transformer 122.50 1.225000e+02       NaN      NaN  NaN                   -63.10
+2026-05-02 20:24:54,195 - src.visualization - INFO - Saved plot: output\model_comparison_short.png
+2026-05-02 20:24:54,928 - src.visualization - INFO - Saved plot: output\feature_importance_short_RandomForest.png
+2026-05-02 20:24:55,394 - src.visualization - INFO - Saved plot: output\feature_importance_short_GBDT.png
+2026-05-02 20:24:55,883 - src.visualization - INFO - Saved plot: output\feature_importance_short_LightGBM.png
+2026-05-02 20:24:56,323 - src.visualization - INFO - Saved plot: output\feature_importance_short_XGBoost.png
+2026-05-02 20:24:56,771 - src.visualization - INFO - Saved plot: output\feature_importance_short_Ridge.png
+2026-05-02 20:24:56,820 - __main__ - INFO - Short-term modeling completed
+2026-05-02 20:24:59,641 - __main__ - INFO - Saved all models: output\all_models.pkl
+2026-05-02 20:24:59,641 - __main__ - INFO - ============================================================
+2026-05-02 20:24:59,641 - __main__ - INFO - Pipeline completed!
+2026-05-02 20:24:59,641 - __main__ - INFO - ============================================================

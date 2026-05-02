@@ -1,6 +1,7 @@
 """
-Capstone Sales Forecast - Main Entry Point
-5-Stage pipeline: Data → Cluster → Preparation → Modeling → Analysis
+Capstone Sales Forecast - Main Entry Point.
+
+5-stage pipeline: data -> cluster -> preparation -> modeling -> analysis.
 """
 import argparse
 import logging
@@ -14,6 +15,7 @@ from src.data_processing import run_data_pipeline
 from src.group_preparation import run_group_preparation
 from src.modeling import run_modeling
 from src.result_analysis import run_result_analysis
+from src.short_term_modeling import run_short_term_modeling, tune_short_term_params
 from src.utils import ensure_dir, load_config, set_random_seed, setup_logging
 
 logger = logging.getLogger(__name__)
@@ -23,7 +25,12 @@ def main():
     parser = argparse.ArgumentParser(description="Capstone Sales Forecast Pipeline")
     parser.add_argument("--config", default="config.yaml", help="Path to config file")
     parser.add_argument("--stage", default="all", choices=["data", "cluster", "train", "all"], help="Pipeline stage")
-    parser.add_argument("--skip-tuning", action="store_true", help="Skip Optuna tuning (override config)")
+    parser.add_argument("--skip-tuning", action="store_true", help="Skip long-term Optuna tuning")
+    parser.add_argument(
+        "--tune-short-params",
+        action="store_true",
+        help="Tune short-term tree models and write params into tuned_params.json, then exit",
+    )
     args = parser.parse_args()
 
     config = load_config(args.config)
@@ -38,7 +45,6 @@ def main():
     ensure_dir(paths["output_dir"])
     ensure_dir(paths["log_dir"])
 
-    # Stage 1: Data Processing
     if args.stage in ("data", "all"):
         logger.info("=" * 60)
         logger.info("Stage 1: Data Processing")
@@ -53,7 +59,6 @@ def main():
     else:
         df_processed = pd.read_parquet(paths["data_predict"])
 
-    # Stage 2: Clustering
     if args.stage in ("cluster", "all"):
         logger.info("=" * 60)
         logger.info("Stage 2: Clustering")
@@ -75,10 +80,17 @@ def main():
     else:
         df_predict = pd.read_parquet(paths["data_predict"])
 
-    # Stage 3-5: Preparation → Modeling → Result Analysis
+    if args.tune_short_params:
+        logger.info("=" * 60)
+        logger.info("Short-Term Parameter Tuning")
+        logger.info("=" * 60)
+        tune_short_term_params(df_predict, config, seed=config["project"]["random_seed"])
+        logger.info("Short-term tuning completed")
+        return
+
     if args.stage in ("train", "all"):
         logger.info("=" * 60)
-        logger.info("Stage 3-5: Group Preparation → Modeling → Result Analysis")
+        logger.info("Stage 3-5: Group Preparation -> Modeling -> Result Analysis")
         logger.info("=" * 60)
 
         all_group_models = {}
@@ -89,26 +101,33 @@ def main():
                 logger.warning(f"No data for group {grp}")
                 continue
 
-            # Stage 3: Preparation
             processed, train_df, test_df = run_group_preparation(grp_data, config)
             if processed is None:
                 logger.warning(f"Group {grp} preparation failed")
                 continue
 
-            # Stage 4: Modeling
             all_results, trained_models, all_test_preds, baseline, val_wapes = run_modeling(
                 processed, train_df, test_df, config, grp, seed=config["project"]["random_seed"]
             )
 
-            # Stage 5: Result Analysis
-            results_df = run_result_analysis(
-                all_results, trained_models, baseline, config, grp, processed
-            )
+            run_result_analysis(all_results, trained_models, baseline, config, grp, processed)
 
             all_group_models[grp] = trained_models
             logger.info(f"Group {grp} completed")
 
-        # Save all models
+        if config.get("short_term", {}).get("enable_modeling", True):
+            logger.info("=" * 60)
+            logger.info("Stage 4-5: Short-Term Modeling")
+            logger.info("=" * 60)
+            short_results, short_models = run_short_term_modeling(
+                df_predict, config, seed=config["project"]["random_seed"]
+            )
+            if short_models:
+                all_group_models["short"] = short_models
+                logger.info("Short-term modeling completed")
+            elif short_results.empty:
+                logger.warning("Short-term modeling skipped or produced no results")
+
         model_path = os.path.join(paths["output_dir"], "all_models.pkl")
         with open(model_path, "wb") as f:
             pickle.dump(all_group_models, f)

@@ -47,7 +47,7 @@ features:
     - "shop_type_desc"
 
 modeling:
-  enable_tuning: true
+  enable_tuning: false
   tree_models:
     - "RandomForest"
     - "GBDT"
@@ -55,7 +55,6 @@ modeling:
     - "XGBoost"
   non_tree_models:
     - "Ridge"
-    - "Prophet"
     - "LSTM"
     - "Transformer"
   dl:
@@ -67,10 +66,17 @@ modeling:
     weight_decay: 0.00001
     hidden_size: 128
     d_model: 128
-  prophet_sample_size: 50
   optuna_trials:
     default: 50
     fast: 30
+    short: 30
+
+short_term:
+  enable_modeling: true
+  enable_tuning: false
+  enable_dl: true
+  min_months: 6
+  test_ratio: 0.2
 
 evaluation:
   metrics:

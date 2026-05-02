@@ -56,6 +56,24 @@ def run_clustering(
 
     logger.info(f"Total combos: {len(spans)}, Long: {len(long_term_combos)}, Short: {len(short_term_combos)}")
 
+    short_rows = [
+        {
+            "ref_branch_code": branch,
+            "material_nature_sum_desc": material,
+            "CV": np.nan,
+            "seasonal_strength": np.nan,
+            "residual_cv": np.nan,
+            "length": int(spans.loc[(branch, material)]),
+            "score": np.nan,
+            "predictability_level": "short",
+        }
+        for branch, material in short_term_combos
+    ]
+
+    if not long_term_combos:
+        logger.warning("No long-term series found; returning short-term labels only")
+        return pd.DataFrame(short_rows)
+
     df_long = df.set_index(["ref_branch_code", "material_nature_sum_desc"]).loc[long_term_combos].reset_index()
 
     logger.info("Extracting STL features for long-term series...")
@@ -107,7 +125,10 @@ def run_clustering(
 
     df_feat["predictability_level"] = df_feat["score"].apply(assign_group)
 
-    logger.info(f"Cluster distribution:\n{df_feat['predictability_level'].value_counts()}")
+    if short_rows:
+        df_feat = pd.concat([df_feat, pd.DataFrame(short_rows)], ignore_index=True, sort=False)
+
+    logger.info(f"Cluster distribution:\n{df_feat['predictability_level'].value_counts(dropna=False)}")
     logger.info(f"Thresholds: low/medium={low_thresh:.2f}, medium/high={high_thresh:.2f}")
 
     return df_feat

@@ -118,5 +118,45 @@
       "reg_alpha": 2.094046216325316e-07,
       "reg_lambda": 5.79760716784276e-07
     }
+  },
+  "short": {
+    "RandomForest": {
+      "n_estimators": 350,
+      "max_depth": 7,
+      "min_samples_split": 7,
+      "min_samples_leaf": 4,
+      "max_features": 0.619248988951925
+    },
+    "GBDT": {
+      "n_estimators": 200,
+      "learning_rate": 0.014821728402144643,
+      "max_depth": 7,
+      "min_samples_split": 17,
+      "min_samples_leaf": 9,
+      "subsample": 0.6679855446624724
+    },
+    "LightGBM": {
+      "n_estimators": 400,
+      "learning_rate": 0.013073389305611506,
+      "num_leaves": 88,
+      "max_depth": 6,
+      "min_child_samples": 10,
+      "subsample": 0.7709801462653252,
+      "colsample_bytree": 0.7582890727947359,
+      "reg_alpha": 0.019991060247454936,
+      "reg_lambda": 3.850531813822025e-06,
+      "min_split_gain": 0.43066856199718806
+    },
+    "XGBoost": {
+      "n_estimators": 500,
+      "learning_rate": 0.05533013946868597,
+      "max_depth": 3,
+      "min_child_weight": 7,
+      "subsample": 0.81582459162082,
+      "colsample_bytree": 0.7012589373981017,
+      "gamma": 0.35388216661015603,
+      "reg_alpha": 0.0014452578372729584,
+      "reg_lambda": 1.0209699332115788e-07
+    }
   }
 }
