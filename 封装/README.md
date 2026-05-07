@@ -144,16 +144,9 @@ X_test         = 最后 20% 测试集
 
 项目默认 `modeling.enable_tuning: false`，因此树模型优先读取 `tuned_params.json`。
 
-不同组使用不同训练策略：
-
-- `high`、`medium`：读取参数后，用完整 `X_train` 训练，再预测 `X_test`。
-- `low`：读取参数后，只用 `X_train_strict` 训练，再预测 `X_test`。这是 low 组当前实验表现更好的口径。
-
 如果打开 `modeling.enable_tuning: true`：
 
 - 先用 `X_train_strict` 训练并在 `X_val` 上调参。
-- high/medium 使用最优参数在完整 `X_train` 上训练。
-- low 使用最优参数仍在 `X_train_strict` 上训练。
 
 ### 融合逻辑
 
