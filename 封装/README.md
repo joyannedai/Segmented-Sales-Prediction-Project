@@ -13,9 +13,9 @@
 ├── logs/                      # 运行日志
 ├── output/                    # 结果、图表、模型缓存
 └── src/
-    ├── data_processing.py     # Stage 1: 数据清洗与月度聚合
-    ├── clustering.py          # Stage 2: STL/CV 指标与可预测性分群
-    ├── group_preparation.py   # Stage 3: high/medium/low 训练测试划分
+    ├── data_processing.py     # 数据清洗与月度聚合
+    ├── clustering.py          # STL/CV 指标与可预测性分群
+    ├── group_preparation.py   # high/medium/low 训练测试划分
     ├── features.py            # 长时序特征工程
     ├── modeling.py            # high/medium/low 建模、融合
     ├── short_term_modeling.py # short 短时序建模、短时序调参
@@ -61,8 +61,8 @@ python main.py --stage train --tune-short-params
 | Stage 2 | `clustering.py` | `output/weighted_score_clusters.csv` |
 | Stage 3 | `group_preparation.py` + `features.py` | high/medium/low 的训练、验证、测试特征 |
 | Stage 4 | `modeling.py` | high/medium/low 模型结果与模型对象 |
-| Stage 4-5 | `short_term_modeling.py` | short 组模型结果与模型对象 |
-| Stage 5 | `result_analysis.py` | CSV 结果、图表、最佳模型日志 |
+| Stage 5 | `short_term_modeling.py` | short 组模型结果与模型对象 |
+| Stage 6 | `result_analysis.py` | CSV 结果、图表、最佳模型日志 |
 
 ## 数据处理逻辑
 
