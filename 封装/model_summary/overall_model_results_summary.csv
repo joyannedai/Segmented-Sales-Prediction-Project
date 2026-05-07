@@ -1,0 +1,5 @@
+﻿group,best_model,best_wape,best_single_model,best_single_wape,baseline_model,baseline_wape,improvement_pct
+high,RandomForest,24.964670409638444,RandomForest,24.964670409638444,Internal_Baseline,52.11096272145537,52.093246591738996
+medium,Ensemble_Median,29.57800973264608,XGBoost,30.07817717998541,Internal_Baseline,72.82404476048437,59.38428052173279
+low,RandomForest,59.79441528557574,RandomForest,59.79441528557574,Internal_Baseline,96.45151380937166,38.00572647957151
+short,Ensemble_Median,53.03761299076869,RandomForest,53.160428772225345,Baseline_MovingAvg3,75.10930255961298,29.38609308923667

@@ -1,0 +1,42 @@
+[
+  {
+    "group": "high",
+    "best_model": "RandomForest",
+    "best_wape": 24.964670409638444,
+    "best_single_model": "RandomForest",
+    "best_single_wape": 24.964670409638444,
+    "baseline_model": "Internal_Baseline",
+    "baseline_wape": 52.11096272145537,
+    "improvement_pct": 52.093246591738996
+  },
+  {
+    "group": "medium",
+    "best_model": "Ensemble_Median",
+    "best_wape": 29.57800973264608,
+    "best_single_model": "XGBoost",
+    "best_single_wape": 30.07817717998541,
+    "baseline_model": "Internal_Baseline",
+    "baseline_wape": 72.82404476048437,
+    "improvement_pct": 59.38428052173279
+  },
+  {
+    "group": "low",
+    "best_model": "RandomForest",
+    "best_wape": 59.79441528557574,
+    "best_single_model": "RandomForest",
+    "best_single_wape": 59.79441528557574,
+    "baseline_model": "Internal_Baseline",
+    "baseline_wape": 96.45151380937166,
+    "improvement_pct": 38.00572647957151
+  },
+  {
+    "group": "short",
+    "best_model": "Ensemble_Median",
+    "best_wape": 53.03761299076869,
+    "best_single_model": "RandomForest",
+    "best_single_wape": 53.160428772225345,
+    "baseline_model": "Baseline_MovingAvg3",
+    "baseline_wape": 75.10930255961298,
+    "improvement_pct": 29.38609308923667
+  }
+]
