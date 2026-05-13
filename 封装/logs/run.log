@@ -984,3 +984,411 @@ Baseline_SeasonalNaive  81.33 8.133000e+01       NaN      NaN  NaN              
 2026-05-02 20:24:59,641 - __main__ - INFO - ============================================================
 2026-05-02 20:24:59,641 - __main__ - INFO - Pipeline completed!
 2026-05-02 20:24:59,641 - __main__ - INFO - ============================================================
+2026-05-13 00:16:53,114 - __main__ - INFO - ============================================================
+2026-05-13 00:16:53,115 - __main__ - INFO - Stage 1: Data Processing
+2026-05-13 00:16:53,115 - __main__ - INFO - ============================================================
+2026-05-13 00:16:53,116 - src.data_processing - INFO - Step 0: Load raw data
+2026-05-13 00:16:54,303 - src.data_processing - INFO - Step 1: Remove invalid date rows
+2026-05-13 00:16:54,957 - src.data_processing - INFO - Step 2: Clamp negative RSV
+2026-05-13 00:16:55,264 - src.data_processing - INFO - Step 3: Deduplicate daily
+2026-05-13 00:16:58,957 - src.data_processing - INFO - Step 4: Aggregate monthly
+2026-05-13 00:16:59,977 - src.data_processing - INFO - Step 5: Check missing months
+2026-05-13 00:17:11,484 - src.data_processing - INFO - Step 5.1: Drop high missing-rate pairs
+2026-05-13 00:17:11,587 - src.data_processing - INFO - Step 6: Fill missing months
+2026-05-13 00:17:56,707 - src.data_processing - INFO - Step 7: Enrich with raw categorical features
+2026-05-13 00:18:03,451 - src.data_processing - INFO - Step 8: Add holiday features
+2026-05-13 00:32:17,458 - __main__ - INFO - Saved processed data: output/monthly_aggregated_sales_predict.parquet
+2026-05-13 00:32:17,459 - __main__ - INFO - ============================================================
+2026-05-13 00:32:17,461 - __main__ - INFO - Stage 2: Clustering
+2026-05-13 00:32:17,461 - __main__ - INFO - ============================================================
+2026-05-13 00:32:17,462 - src.clustering - INFO - Evaluating time spans...
+2026-05-13 00:32:22,174 - src.clustering - INFO - Total combos: 9288, Long: 7582, Short: 1706
+2026-05-13 00:32:23,440 - src.clustering - INFO - Extracting STL features for long-term series...
+2026-05-13 00:32:58,419 - src.clustering - INFO - Cluster distribution:
+predictability_level
+low       3791
+medium    2274
+short     1706
+high      1517
+Name: count, dtype: int64
+2026-05-13 00:32:58,419 - src.clustering - INFO - Thresholds: low/medium=50.83, medium/high=71.42
+2026-05-13 00:32:58,537 - __main__ - INFO - Saved clusters: output/weighted_score_clusters.csv
+2026-05-13 00:32:59,760 - __main__ - INFO - Saved predict data: output/monthly_aggregated_sales_predict.parquet
+2026-05-13 00:32:59,760 - __main__ - INFO - ============================================================
+2026-05-13 00:32:59,761 - __main__ - INFO - Stage 3-5: Group Preparation -> Modeling -> Result Analysis
+2026-05-13 00:32:59,761 - __main__ - INFO - ============================================================
+2026-05-13 00:33:02,768 - src.group_preparation - INFO - Features prepared: 32
+2026-05-13 00:33:03,912 - src.models.base - INFO - Baseline: mean=53.23%, seasonal_naive=52.11%, best=52.11%
+2026-05-13 00:33:03,913 - src.modeling - INFO - [high/RandomForest] Tuning on strict train/val...
+2026-05-13 00:36:37,975 - src.modeling - INFO - [high/RandomForest] Best val WAPE=31.17%, params={'n_estimators': 350, 'max_depth': 19, 'min_samples_split': 18, 'min_samples_leaf': 6, 'max_features': 0.3481911624451403}
+2026-05-13 00:36:42,883 - src.modeling - INFO - [high/RandomForest] Test WAPE=24.93%
+2026-05-13 00:36:42,883 - src.modeling - INFO - [high/GBDT] Tuning on strict train/val...
+2026-05-13 01:04:16,018 - src.modeling - INFO - [high/GBDT] Best val WAPE=30.30%, params={'n_estimators': 200, 'learning_rate': 0.03753359766614066, 'max_depth': 6, 'min_samples_split': 9, 'min_samples_leaf': 4, 'subsample': 0.6851789015008469}
+2026-05-13 01:04:42,710 - src.modeling - INFO - [high/GBDT] Test WAPE=25.18%
+2026-05-13 01:04:42,711 - src.modeling - INFO - [high/LightGBM] Tuning on strict train/val...
+2026-05-13 01:05:13,812 - src.modeling - INFO - [high/LightGBM] Best val WAPE=30.20%, params={'n_estimators': 400, 'learning_rate': 0.020618650041525577, 'num_leaves': 105, 'max_depth': 5, 'min_child_samples': 28, 'subsample': 0.9198524560298148, 'colsample_bytree': 0.7044956670055701, 'reg_alpha': 0.0002037125658216355, 'reg_lambda': 0.07829258963898378, 'min_split_gain': 0.08020279027223479}
+2026-05-13 01:05:14,428 - src.modeling - INFO - [high/LightGBM] Test WAPE=25.96%
+2026-05-13 01:05:14,429 - src.modeling - INFO - [high/XGBoost] Tuning on strict train/val...
+2026-05-13 01:06:04,880 - src.modeling - INFO - [high/XGBoost] Best val WAPE=29.88%, params={'n_estimators': 250, 'learning_rate': 0.049166125935439384, 'max_depth': 6, 'min_child_weight': 1, 'subsample': 0.9051737874718867, 'colsample_bytree': 0.6916748599962715, 'gamma': 0.27939929152165716, 'reg_alpha': 0.00011497396497841208, 'reg_lambda': 2.1284774565415389e-07}
+2026-05-13 01:06:05,358 - src.modeling - INFO - [high/XGBoost] Test WAPE=25.88%
+2026-05-13 01:06:05,439 - src.modeling - INFO - [high/Ridge] Test WAPE=29.34%
+2026-05-13 01:06:05,646 - src.models.dl_models - INFO - Training LSTM (seq_length=12)
+2026-05-13 01:06:08,410 - src.models.dl_models - INFO - Samples: Train=33,255, Test=1,338
+2026-05-13 01:06:08,571 - src.models.dl_models - INFO - Using device: cuda
+2026-05-13 01:06:08,659 - src.models.dl_models - INFO - Model parameters: 847,617
+2026-05-13 01:06:29,809 - src.models.dl_models - INFO - DL early stop at epoch 16, best val loss 1.335808
+2026-05-13 01:06:29,841 - src.models.dl_models - INFO - LSTM Test MAPE=441.28% WAPE=70.25%
+2026-05-13 01:06:29,843 - src.modeling - INFO - [high/LSTM] Test WAPE=70.25%
+2026-05-13 01:06:29,870 - src.models.dl_models - INFO - Training TRANSFORMER (seq_length=12)
+2026-05-13 01:06:32,628 - src.models.dl_models - INFO - Samples: Train=33,255, Test=1,338
+2026-05-13 01:06:32,734 - src.models.dl_models - INFO - Using device: cuda
+2026-05-13 01:06:32,773 - src.models.dl_models - INFO - Model parameters: 276,481
+2026-05-13 01:06:46,767 - src.models.dl_models - INFO - DL early stop at epoch 16, best val loss 1.264141
+2026-05-13 01:06:46,778 - src.models.dl_models - INFO - TRANSFORMER Test MAPE=121.11% WAPE=66.62%
+2026-05-13 01:06:46,780 - src.modeling - INFO - [high/Transformer] Test WAPE=66.62%
+2026-05-13 01:06:46,784 - src.models.ensemble - INFO - Fusion results: avg=25.16%, weighted=28.39%, median=25.22%, trimmed=25.13%
+2026-05-13 01:06:46,803 - src.result_analysis - INFO - Saved results: output\results_high.csv
+2026-05-13 01:06:46,804 - src.result_analysis - INFO - [high] Best model: RandomForest (WAPE=24.93%)
+2026-05-13 01:06:47,637 - src.visualization - INFO - Saved plot: output\model_comparison_high.png
+2026-05-13 01:06:48,089 - src.visualization - INFO - Saved plot: output\feature_importance_high_RandomForest.png
+2026-05-13 01:06:48,351 - src.visualization - INFO - Saved plot: output\feature_importance_high_GBDT.png
+2026-05-13 01:06:48,613 - src.visualization - INFO - Saved plot: output\feature_importance_high_LightGBM.png
+2026-05-13 01:06:48,889 - src.visualization - INFO - Saved plot: output\feature_importance_high_XGBoost.png
+2026-05-13 01:06:49,152 - src.visualization - INFO - Saved plot: output\feature_importance_high_Ridge.png
+2026-05-13 01:06:49,152 - src.result_analysis - INFO - 
+HIGH Group Results:
+2026-05-13 01:06:49,161 - src.result_analysis - INFO -   mape  wape      rmse       mae   r2             model  improvement_vs_baseline
+ 80.20 24.93 155582.50  98014.50 0.84      RandomForest                    52.16
+ 25.13 25.13       NaN       NaN  NaN  Ensemble_Trimmed                    51.77
+ 25.16 25.16       NaN       NaN  NaN      Ensemble_Avg                    51.72
+112.47 25.18 155357.61  99008.18 0.84              GBDT                    51.67
+ 25.22 25.22       NaN       NaN  NaN   Ensemble_Median                    51.61
+114.70 25.88 158222.25 101753.13 0.83           XGBoost                    50.33
+123.48 25.96 160795.13 102069.39 0.83          LightGBM                    50.18
+ 28.39 28.39       NaN       NaN  NaN Ensemble_Weighted                    45.53
+ 90.64 29.34 177657.39 115341.34 0.79             Ridge                    43.70
+ 66.62 66.62       NaN       NaN  NaN       Transformer                   -27.85
+ 70.25 70.25       NaN       NaN  NaN              LSTM                   -34.82
+2026-05-13 01:06:49,162 - __main__ - INFO - Group high completed
+2026-05-13 01:06:54,487 - src.group_preparation - INFO - Features prepared: 32
+2026-05-13 01:06:56,287 - src.models.base - INFO - Baseline: mean=85.23%, seasonal_naive=72.82%, best=72.82%
+2026-05-13 01:06:56,288 - src.modeling - INFO - [medium/RandomForest] Tuning on strict train/val...
+2026-05-13 02:48:12,950 - __main__ - INFO - ============================================================
+2026-05-13 02:48:12,955 - __main__ - INFO - Stage 1: Data Processing
+2026-05-13 02:48:12,957 - __main__ - INFO - ============================================================
+2026-05-13 02:48:12,957 - src.data_processing - INFO - Step 0: Load raw data
+2026-05-13 02:48:14,793 - src.data_processing - INFO - Step 1: Remove invalid date rows
+2026-05-13 02:48:15,502 - src.data_processing - INFO - Step 2: Clamp negative RSV
+2026-05-13 02:48:15,743 - src.data_processing - INFO - Step 3: Deduplicate daily
+2026-05-13 02:48:19,882 - src.data_processing - INFO - Step 4: Aggregate monthly
+2026-05-13 02:48:21,559 - src.data_processing - INFO - Step 5: Check missing months
+2026-05-13 02:48:34,753 - src.data_processing - INFO - Step 5.1: Drop high missing-rate pairs
+2026-05-13 02:48:34,887 - src.data_processing - INFO - Step 6: Fill missing months
+2026-05-13 02:49:25,536 - src.data_processing - INFO - Step 7: Enrich with raw categorical features
+2026-05-13 02:49:33,291 - src.data_processing - INFO - Step 8: Add holiday features
+2026-05-13 02:56:06,807 - __main__ - INFO - Saved processed data: output/monthly_aggregated_sales_predict.parquet
+2026-05-13 02:56:06,808 - __main__ - INFO - ============================================================
+2026-05-13 02:56:06,808 - __main__ - INFO - Stage 2: Clustering
+2026-05-13 02:56:06,808 - __main__ - INFO - ============================================================
+2026-05-13 02:56:06,809 - src.clustering - INFO - Evaluating time spans...
+2026-05-13 02:56:08,987 - src.clustering - INFO - Total combos: 9288, Long: 7582, Short: 1706
+2026-05-13 02:56:09,827 - src.clustering - INFO - Extracting STL features for long-term series...
+2026-05-13 02:56:44,912 - src.clustering - INFO - Cluster distribution:
+predictability_level
+low       3791
+medium    2274
+short     1706
+high      1517
+Name: count, dtype: int64
+2026-05-13 02:56:44,913 - src.clustering - INFO - Thresholds: low/medium=50.83, medium/high=71.42
+2026-05-13 02:56:45,063 - __main__ - INFO - Saved clusters: output/weighted_score_clusters.csv
+2026-05-13 02:56:46,394 - __main__ - INFO - Saved predict data: output/monthly_aggregated_sales_predict.parquet
+2026-05-13 02:56:46,394 - __main__ - INFO - ============================================================
+2026-05-13 02:56:46,394 - __main__ - INFO - Stage 3-5: Group Preparation -> Modeling -> Result Analysis
+2026-05-13 02:56:46,394 - __main__ - INFO - ============================================================
+2026-05-13 02:56:49,778 - src.group_preparation - INFO - Features prepared: 32
+2026-05-13 02:56:50,997 - src.models.base - INFO - Baseline: mean=53.23%, seasonal_naive=52.11%, best=52.11%
+2026-05-13 02:56:50,997 - src.modeling - INFO - [high/RandomForest] Tuning on strict train/val...
+2026-05-13 03:00:21,286 - src.modeling - INFO - [high/RandomForest] Best val WAPE=31.17%, params={'n_estimators': 350, 'max_depth': 19, 'min_samples_split': 18, 'min_samples_leaf': 6, 'max_features': 0.3481911624451403}
+2026-05-13 03:00:26,337 - src.modeling - INFO - [high/RandomForest] Test WAPE=24.93%
+2026-05-13 03:00:26,337 - src.modeling - INFO - [high/GBDT] Tuning on strict train/val...
+2026-05-13 03:28:00,585 - src.modeling - INFO - [high/GBDT] Best val WAPE=30.30%, params={'n_estimators': 200, 'learning_rate': 0.03753359766614066, 'max_depth': 6, 'min_samples_split': 9, 'min_samples_leaf': 4, 'subsample': 0.6851789015008469}
+2026-05-13 03:28:27,185 - src.modeling - INFO - [high/GBDT] Test WAPE=25.18%
+2026-05-13 03:28:27,185 - src.modeling - INFO - [high/LightGBM] Tuning on strict train/val...
+2026-05-13 03:28:54,997 - src.modeling - INFO - [high/LightGBM] Best val WAPE=30.20%, params={'n_estimators': 400, 'learning_rate': 0.020618650041525577, 'num_leaves': 105, 'max_depth': 5, 'min_child_samples': 28, 'subsample': 0.9198524560298148, 'colsample_bytree': 0.7044956670055701, 'reg_alpha': 0.0002037125658216355, 'reg_lambda': 0.07829258963898378, 'min_split_gain': 0.08020279027223479}
+2026-05-13 03:28:55,481 - src.modeling - INFO - [high/LightGBM] Test WAPE=25.96%
+2026-05-13 03:28:55,482 - src.modeling - INFO - [high/XGBoost] Tuning on strict train/val...
+2026-05-13 03:29:42,412 - src.modeling - INFO - [high/XGBoost] Best val WAPE=29.88%, params={'n_estimators': 250, 'learning_rate': 0.049166125935439384, 'max_depth': 6, 'min_child_weight': 1, 'subsample': 0.9051737874718867, 'colsample_bytree': 0.6916748599962715, 'gamma': 0.27939929152165716, 'reg_alpha': 0.00011497396497841208, 'reg_lambda': 2.1284774565415389e-07}
+2026-05-13 03:29:42,887 - src.modeling - INFO - [high/XGBoost] Test WAPE=25.88%
+2026-05-13 03:29:43,023 - src.modeling - INFO - [high/Ridge] Test WAPE=29.34%
+2026-05-13 03:29:43,145 - src.models.dl_models - INFO - Training LSTM (seq_length=12)
+2026-05-13 03:29:46,008 - src.models.dl_models - INFO - Samples: Train=33,255, Test=1,338
+2026-05-13 03:29:46,223 - src.models.dl_models - INFO - Using device: cuda
+2026-05-13 03:29:46,263 - src.models.dl_models - INFO - Model parameters: 847,617
+2026-05-13 03:30:07,442 - src.models.dl_models - INFO - DL early stop at epoch 16, best val loss 1.335808
+2026-05-13 03:30:07,483 - src.models.dl_models - INFO - LSTM Test MAPE=441.28% WAPE=70.25%
+2026-05-13 03:30:07,483 - src.modeling - INFO - [high/LSTM] Test WAPE=70.25%
+2026-05-13 03:30:07,514 - src.models.dl_models - INFO - Training TRANSFORMER (seq_length=12)
+2026-05-13 03:30:10,254 - src.models.dl_models - INFO - Samples: Train=33,255, Test=1,338
+2026-05-13 03:30:10,361 - src.models.dl_models - INFO - Using device: cuda
+2026-05-13 03:30:10,448 - src.models.dl_models - INFO - Model parameters: 276,481
+2026-05-13 03:30:25,329 - src.models.dl_models - INFO - DL early stop at epoch 16, best val loss 1.264141
+2026-05-13 03:30:25,339 - src.models.dl_models - INFO - TRANSFORMER Test MAPE=121.11% WAPE=66.62%
+2026-05-13 03:30:25,342 - src.modeling - INFO - [high/Transformer] Test WAPE=66.62%
+2026-05-13 03:30:25,343 - src.models.ensemble - INFO - Fusion results: avg=25.16%, weighted=28.39%, median=25.22%, trimmed=25.13%
+2026-05-13 03:30:25,359 - src.result_analysis - INFO - Saved results: output\results_high.csv
+2026-05-13 03:30:25,360 - src.result_analysis - INFO - [high] Best model: RandomForest (WAPE=24.93%)
+2026-05-13 03:30:26,537 - src.visualization - INFO - Saved plot: output\model_comparison_high.png
+2026-05-13 03:46:59,102 - __main__ - INFO - ============================================================
+2026-05-13 03:46:59,103 - __main__ - INFO - Stage 1: Data Processing
+2026-05-13 03:46:59,103 - __main__ - INFO - ============================================================
+2026-05-13 03:46:59,103 - src.data_processing - INFO - Step 0: Load raw data
+2026-05-13 03:47:00,282 - src.data_processing - INFO - Step 1: Remove invalid date rows
+2026-05-13 03:47:00,851 - src.data_processing - INFO - Step 2: Clamp negative RSV
+2026-05-13 03:47:01,087 - src.data_processing - INFO - Step 3: Deduplicate daily
+2026-05-13 03:47:04,791 - src.data_processing - INFO - Step 4: Aggregate monthly
+2026-05-13 03:47:05,823 - src.data_processing - INFO - Step 5: Check missing months
+2026-05-13 03:47:16,426 - src.data_processing - INFO - Step 5.1: Drop high missing-rate pairs
+2026-05-13 03:47:16,533 - src.data_processing - INFO - Step 6: Fill missing months
+2026-05-13 03:48:04,115 - src.data_processing - INFO - Step 7: Enrich with raw categorical features
+2026-05-13 03:48:11,557 - src.data_processing - INFO - Step 8: Add holiday features
+2026-05-13 03:54:32,910 - __main__ - INFO - Saved processed data: output/monthly_aggregated_sales_predict.parquet
+2026-05-13 03:54:32,910 - __main__ - INFO - ============================================================
+2026-05-13 03:54:32,910 - __main__ - INFO - Stage 2: Clustering
+2026-05-13 03:54:32,910 - __main__ - INFO - ============================================================
+2026-05-13 03:54:32,910 - src.clustering - INFO - Evaluating time spans...
+2026-05-13 03:54:35,173 - src.clustering - INFO - Total combos: 9288, Long: 7582, Short: 1706
+2026-05-13 03:54:36,025 - src.clustering - INFO - Extracting STL features for long-term series...
+2026-05-13 03:55:11,295 - src.clustering - INFO - Cluster distribution:
+predictability_level
+low       3791
+medium    2274
+short     1706
+high      1517
+Name: count, dtype: int64
+2026-05-13 03:55:11,297 - src.clustering - INFO - Thresholds: low/medium=50.83, medium/high=71.42
+2026-05-13 03:55:11,420 - __main__ - INFO - Saved clusters: output/weighted_score_clusters.csv
+2026-05-13 03:55:12,774 - __main__ - INFO - Saved predict data: output/monthly_aggregated_sales_predict.parquet
+2026-05-13 03:55:12,774 - __main__ - INFO - ============================================================
+2026-05-13 03:55:12,775 - __main__ - INFO - Stage 3-5: Group Preparation -> Modeling -> Result Analysis
+2026-05-13 03:55:12,775 - __main__ - INFO - ============================================================
+2026-05-13 03:55:16,191 - src.group_preparation - INFO - Features prepared: 32
+2026-05-13 03:55:17,410 - src.models.base - INFO - Baseline: mean=53.23%, seasonal_naive=52.11%, best=52.11%
+2026-05-13 03:55:17,412 - src.modeling - INFO - [high/RandomForest] Tuning on strict train/val...
+2026-05-13 03:58:42,543 - src.modeling - INFO - [high/RandomForest] Best val WAPE=31.17%, params={'n_estimators': 350, 'max_depth': 19, 'min_samples_split': 18, 'min_samples_leaf': 6, 'max_features': 0.3481911624451403}
+2026-05-13 03:58:47,408 - src.modeling - INFO - [high/RandomForest] Test WAPE=24.93%
+2026-05-13 03:58:47,409 - src.modeling - INFO - [high/GBDT] Tuning on strict train/val...
+2026-05-13 04:26:55,274 - src.modeling - INFO - [high/GBDT] Best val WAPE=30.30%, params={'n_estimators': 200, 'learning_rate': 0.03753359766614066, 'max_depth': 6, 'min_samples_split': 9, 'min_samples_leaf': 4, 'subsample': 0.6851789015008469}
+2026-05-13 04:27:22,477 - src.modeling - INFO - [high/GBDT] Test WAPE=25.18%
+2026-05-13 04:27:22,477 - src.modeling - INFO - [high/LightGBM] Tuning on strict train/val...
+2026-05-13 04:27:51,003 - src.modeling - INFO - [high/LightGBM] Best val WAPE=30.20%, params={'n_estimators': 400, 'learning_rate': 0.020618650041525577, 'num_leaves': 105, 'max_depth': 5, 'min_child_samples': 28, 'subsample': 0.9198524560298148, 'colsample_bytree': 0.7044956670055701, 'reg_alpha': 0.0002037125658216355, 'reg_lambda': 0.07829258963898378, 'min_split_gain': 0.08020279027223479}
+2026-05-13 04:27:51,476 - src.modeling - INFO - [high/LightGBM] Test WAPE=25.96%
+2026-05-13 04:27:51,476 - src.modeling - INFO - [high/XGBoost] Tuning on strict train/val...
+2026-05-13 04:28:38,226 - src.modeling - INFO - [high/XGBoost] Best val WAPE=29.88%, params={'n_estimators': 250, 'learning_rate': 0.049166125935439384, 'max_depth': 6, 'min_child_weight': 1, 'subsample': 0.9051737874718867, 'colsample_bytree': 0.6916748599962715, 'gamma': 0.27939929152165716, 'reg_alpha': 0.00011497396497841208, 'reg_lambda': 2.1284774565415389e-07}
+2026-05-13 04:28:38,696 - src.modeling - INFO - [high/XGBoost] Test WAPE=25.88%
+2026-05-13 04:28:38,821 - src.modeling - INFO - [high/Ridge] Test WAPE=29.34%
+2026-05-13 04:28:38,900 - src.models.dl_models - INFO - Training LSTM (seq_length=12)
+2026-05-13 04:28:41,802 - src.models.dl_models - INFO - Samples: Train=33,255, Test=1,338
+2026-05-13 04:28:41,958 - src.models.dl_models - INFO - Using device: cuda
+2026-05-13 04:28:42,000 - src.models.dl_models - INFO - Model parameters: 847,617
+2026-05-13 04:29:03,475 - src.models.dl_models - INFO - DL early stop at epoch 16, best val loss 1.335808
+2026-05-13 04:29:03,508 - src.models.dl_models - INFO - LSTM Test MAPE=441.28% WAPE=70.25%
+2026-05-13 04:29:03,510 - src.modeling - INFO - [high/LSTM] Test WAPE=70.25%
+2026-05-13 04:29:03,554 - src.models.dl_models - INFO - Training TRANSFORMER (seq_length=12)
+2026-05-13 04:29:06,384 - src.models.dl_models - INFO - Samples: Train=33,255, Test=1,338
+2026-05-13 04:29:06,484 - src.models.dl_models - INFO - Using device: cuda
+2026-05-13 04:29:06,523 - src.models.dl_models - INFO - Model parameters: 276,481
+2026-05-13 04:29:21,701 - src.models.dl_models - INFO - DL early stop at epoch 16, best val loss 1.264141
+2026-05-13 04:29:21,711 - src.models.dl_models - INFO - TRANSFORMER Test MAPE=121.11% WAPE=66.62%
+2026-05-13 04:29:21,721 - src.modeling - INFO - [high/Transformer] Test WAPE=66.62%
+2026-05-13 04:29:21,723 - src.models.ensemble - INFO - Fusion results: avg=25.16%, weighted=28.39%, median=25.22%, trimmed=25.13%
+2026-05-13 04:29:21,737 - src.result_analysis - INFO - Saved results: output\results_high.csv
+2026-05-13 04:29:21,738 - src.result_analysis - INFO - [high] Best model: RandomForest (WAPE=24.93%)
+2026-05-13 04:29:22,327 - src.visualization - INFO - Saved plot: output\model_comparison_high.png
+2026-05-13 04:29:22,817 - src.visualization - INFO - Saved plot: output\feature_importance_high_RandomForest.png
+2026-05-13 04:29:23,045 - src.visualization - INFO - Saved plot: output\feature_importance_high_GBDT.png
+2026-05-13 04:29:23,291 - src.visualization - INFO - Saved plot: output\feature_importance_high_LightGBM.png
+2026-05-13 04:29:23,664 - src.visualization - INFO - Saved plot: output\feature_importance_high_XGBoost.png
+2026-05-13 04:29:23,915 - src.visualization - INFO - Saved plot: output\feature_importance_high_Ridge.png
+2026-05-13 04:29:23,915 - src.result_analysis - INFO - 
+HIGH Group Results:
+2026-05-13 04:29:23,915 - src.result_analysis - INFO -   mape  wape      rmse       mae   r2             model  improvement_vs_baseline
+ 80.20 24.93 155582.50  98014.50 0.84      RandomForest                    52.16
+ 25.13 25.13       NaN       NaN  NaN  Ensemble_Trimmed                    51.77
+ 25.16 25.16       NaN       NaN  NaN      Ensemble_Avg                    51.72
+112.47 25.18 155357.61  99008.18 0.84              GBDT                    51.67
+ 25.22 25.22       NaN       NaN  NaN   Ensemble_Median                    51.61
+114.70 25.88 158222.25 101753.13 0.83           XGBoost                    50.33
+123.48 25.96 160795.13 102069.39 0.83          LightGBM                    50.18
+ 28.39 28.39       NaN       NaN  NaN Ensemble_Weighted                    45.53
+ 90.64 29.34 177657.39 115341.34 0.79             Ridge                    43.70
+ 66.62 66.62       NaN       NaN  NaN       Transformer                   -27.85
+ 70.25 70.25       NaN       NaN  NaN              LSTM                   -34.82
+2026-05-13 04:29:23,915 - __main__ - INFO - Group high completed
+2026-05-13 04:29:29,113 - src.group_preparation - INFO - Features prepared: 32
+2026-05-13 04:29:30,945 - src.models.base - INFO - Baseline: mean=85.23%, seasonal_naive=72.82%, best=72.82%
+2026-05-13 04:29:30,951 - src.modeling - INFO - [medium/RandomForest] Tuning on strict train/val...
+2026-05-13 04:36:25,165 - src.modeling - INFO - [medium/RandomForest] Best val WAPE=45.12%, params={'n_estimators': 200, 'max_depth': 14, 'min_samples_split': 13, 'min_samples_leaf': 10, 'max_features': 0.315055717640765}
+2026-05-13 04:36:31,076 - src.modeling - INFO - [medium/RandomForest] Test WAPE=30.58%
+2026-05-13 04:36:31,076 - src.modeling - INFO - [medium/GBDT] Tuning on strict train/val...
+2026-05-13 06:13:00,972 - src.modeling - INFO - [medium/GBDT] Best val WAPE=41.44%, params={'n_estimators': 250, 'learning_rate': 0.1314034648499595, 'max_depth': 7, 'min_samples_split': 3, 'min_samples_leaf': 5, 'subsample': 0.794838944075842}
+2026-05-13 06:14:56,631 - src.modeling - INFO - [medium/GBDT] Test WAPE=32.72%
+2026-05-13 06:14:56,631 - src.modeling - INFO - [medium/LightGBM] Tuning on strict train/val...
+2026-05-13 06:15:32,228 - src.modeling - INFO - [medium/LightGBM] Best val WAPE=39.63%, params={'n_estimators': 350, 'learning_rate': 0.06249978122304181, 'num_leaves': 26, 'max_depth': 11, 'min_child_samples': 50, 'subsample': 0.7769551007976021, 'colsample_bytree': 0.99419460466932, 'reg_alpha': 2.717474257457124e-05, 'reg_lambda': 0.062352924376888545, 'min_split_gain': 0.49942358486349764}
+2026-05-13 06:15:32,851 - src.modeling - INFO - [medium/LightGBM] Test WAPE=30.93%
+2026-05-13 06:15:32,851 - src.modeling - INFO - [medium/XGBoost] Tuning on strict train/val...
+2026-05-13 06:16:48,325 - src.modeling - INFO - [medium/XGBoost] Best val WAPE=40.97%, params={'n_estimators': 300, 'learning_rate': 0.06342001701617758, 'max_depth': 7, 'min_child_weight': 2, 'subsample': 0.836114059207932, 'colsample_bytree': 0.6494569708357757, 'gamma': 0.07069636186440754, 'reg_alpha': 0.3000896448529262, 'reg_lambda': 0.016990052392955295}
+2026-05-13 06:16:49,176 - src.modeling - INFO - [medium/XGBoost] Test WAPE=30.90%
+2026-05-13 06:16:49,244 - src.modeling - INFO - [medium/Ridge] Test WAPE=36.03%
+2026-05-13 06:16:49,355 - src.models.dl_models - INFO - Training LSTM (seq_length=12)
+2026-05-13 06:16:54,281 - src.models.dl_models - INFO - Samples: Train=81,052, Test=5,823
+2026-05-13 06:16:54,594 - src.models.dl_models - INFO - Using device: cuda
+2026-05-13 06:16:54,598 - src.models.dl_models - INFO - Model parameters: 847,617
+2026-05-13 06:17:40,436 - src.models.dl_models - INFO - DL early stop at epoch 16, best val loss 1.417875
+2026-05-13 06:17:40,537 - src.models.dl_models - INFO - LSTM Test MAPE=1277674387406848000.00% WAPE=84.86%
+2026-05-13 06:17:40,555 - src.modeling - INFO - [medium/LSTM] Test WAPE=84.86%
+2026-05-13 06:17:40,589 - src.models.dl_models - INFO - Training TRANSFORMER (seq_length=12)
+2026-05-13 06:17:45,547 - src.models.dl_models - INFO - Samples: Train=81,052, Test=5,823
+2026-05-13 06:17:45,821 - src.models.dl_models - INFO - Using device: cuda
+2026-05-13 06:17:45,824 - src.models.dl_models - INFO - Model parameters: 276,481
+2026-05-13 06:18:25,331 - src.models.dl_models - INFO - DL early stop at epoch 16, best val loss 1.492226
+2026-05-13 06:18:25,367 - src.models.dl_models - INFO - TRANSFORMER Test MAPE=4417159115571200000.00% WAPE=81.05%
+2026-05-13 06:18:25,373 - src.modeling - INFO - [medium/Transformer] Test WAPE=81.05%
+2026-05-13 06:18:25,374 - src.models.ensemble - INFO - Fusion results: avg=29.77%, weighted=34.81%, median=29.86%, trimmed=29.80%
+2026-05-13 06:18:25,399 - src.result_analysis - INFO - Saved results: output\results_medium.csv
+2026-05-13 06:18:25,400 - src.result_analysis - INFO - [medium] Best model: Ensemble_Avg (WAPE=29.77%)
+2026-05-13 06:18:25,759 - src.visualization - INFO - Saved plot: output\model_comparison_medium.png
+2026-05-13 06:18:26,188 - src.visualization - INFO - Saved plot: output\feature_importance_medium_RandomForest.png
+2026-05-13 06:18:26,416 - src.visualization - INFO - Saved plot: output\feature_importance_medium_GBDT.png
+2026-05-13 06:18:26,650 - src.visualization - INFO - Saved plot: output\feature_importance_medium_LightGBM.png
+2026-05-13 06:18:26,899 - src.visualization - INFO - Saved plot: output\feature_importance_medium_XGBoost.png
+2026-05-13 06:18:27,162 - src.visualization - INFO - Saved plot: output\feature_importance_medium_Ridge.png
+2026-05-13 06:18:27,164 - src.result_analysis - INFO - 
+MEDIUM Group Results:
+2026-05-13 06:18:27,167 - src.result_analysis - INFO -         mape  wape      rmse      mae   r2             model  improvement_vs_baseline
+2.977000e+01 29.77       NaN      NaN  NaN      Ensemble_Avg                    59.12
+2.980000e+01 29.80       NaN      NaN  NaN  Ensemble_Trimmed                    59.07
+2.986000e+01 29.86       NaN      NaN  NaN   Ensemble_Median                    59.00
+1.828762e+19 30.58 137085.73 62689.13 0.86      RandomForest                    58.02
+1.889087e+19 30.90 137608.56 63365.55 0.86           XGBoost                    57.56
+1.804774e+19 30.93 137268.63 63419.59 0.86          LightGBM                    57.53
+2.027764e+19 32.72 142532.20 67093.24 0.85              GBDT                    55.07
+3.481000e+01 34.81       NaN      NaN  NaN Ensemble_Weighted                    52.20
+1.267086e+19 36.03 148902.25 73875.45 0.83             Ridge                    50.52
+8.105000e+01 81.05       NaN      NaN  NaN       Transformer                   -11.29
+8.486000e+01 84.86       NaN      NaN  NaN              LSTM                   -16.53
+2026-05-13 06:18:27,168 - __main__ - INFO - Group medium completed
+2026-05-13 06:18:36,516 - src.group_preparation - INFO - Features prepared: 32
+2026-05-13 06:18:39,580 - src.models.base - INFO - Baseline: mean=121.48%, seasonal_naive=96.45%, best=96.45%
+2026-05-13 06:18:39,580 - src.modeling - INFO - [low/RandomForest] Tuning on strict train/val...
+2026-05-13 06:33:37,719 - src.modeling - INFO - [low/RandomForest] Best val WAPE=56.88%, params={'n_estimators': 150, 'max_depth': 9, 'min_samples_split': 6, 'min_samples_leaf': 6, 'max_features': 0.30987546047008446}
+2026-05-13 06:33:43,313 - src.modeling - INFO - [low/RandomForest] Test WAPE=59.50%
+2026-05-13 06:33:43,313 - src.modeling - INFO - [low/GBDT] Tuning on strict train/val...
+2026-05-13 08:53:54,608 - src.modeling - INFO - [low/GBDT] Best val WAPE=57.44%, params={'n_estimators': 200, 'learning_rate': 0.03318485036010632, 'max_depth': 7, 'min_samples_split': 3, 'min_samples_leaf': 4, 'subsample': 0.6493683700479091}
+2026-05-13 08:56:12,162 - src.modeling - INFO - [low/GBDT] Test WAPE=60.58%
+2026-05-13 08:56:12,162 - src.modeling - INFO - [low/LightGBM] Tuning on strict train/val...
+2026-05-13 08:56:57,911 - src.modeling - INFO - [low/LightGBM] Best val WAPE=57.32%, params={'n_estimators': 800, 'learning_rate': 0.046118109073585274, 'num_leaves': 15, 'max_depth': 9, 'min_child_samples': 45, 'subsample': 0.7109869669928413, 'colsample_bytree': 0.9670179284377606, 'reg_alpha': 3.5591498280427704e-07, 'reg_lambda': 1.2391844377699314e-08, 'min_split_gain': 0.31038210392872867}
+2026-05-13 08:56:59,494 - src.modeling - INFO - [low/LightGBM] Test WAPE=66.80%
+2026-05-13 08:56:59,494 - src.modeling - INFO - [low/XGBoost] Tuning on strict train/val...
+2026-05-13 08:58:08,656 - src.modeling - INFO - [low/XGBoost] Best val WAPE=57.84%, params={'n_estimators': 300, 'learning_rate': 0.02920273580556546, 'max_depth': 4, 'min_child_weight': 7, 'subsample': 0.7512051044757314, 'colsample_bytree': 0.7822184498865059, 'gamma': 0.05328191267652074, 'reg_alpha': 0.00727026821466543, 'reg_lambda': 0.00011569789931316323}
+2026-05-13 08:58:09,448 - src.modeling - INFO - [low/XGBoost] Test WAPE=61.83%
+2026-05-13 08:58:09,528 - src.modeling - INFO - [low/Ridge] Test WAPE=72.17%
+2026-05-13 08:58:09,725 - src.models.dl_models - INFO - Training LSTM (seq_length=12)
+2026-05-13 08:58:18,395 - src.models.dl_models - INFO - Samples: Train=174,168, Test=15,261
+2026-05-13 08:58:19,023 - src.models.dl_models - INFO - Using device: cuda
+2026-05-13 08:58:19,023 - src.models.dl_models - INFO - Model parameters: 847,617
+2026-05-13 09:01:34,186 - src.models.dl_models - INFO - DL early stop at epoch 32, best val loss 0.950670
+2026-05-13 09:01:34,466 - src.models.dl_models - INFO - LSTM Test MAPE=11212876273627955200.00% WAPE=96.24%
+2026-05-13 09:01:34,490 - src.modeling - INFO - [low/LSTM] Test WAPE=96.24%
+2026-05-13 09:01:34,572 - src.models.dl_models - INFO - Training TRANSFORMER (seq_length=12)
+2026-05-13 09:01:43,825 - src.models.dl_models - INFO - Samples: Train=174,168, Test=15,261
+2026-05-13 09:01:44,399 - src.models.dl_models - INFO - Using device: cuda
+2026-05-13 09:01:44,409 - src.models.dl_models - INFO - Model parameters: 276,481
+2026-05-13 09:07:35,980 - src.models.dl_models - INFO - DL early stop at epoch 68, best val loss 0.896827
+2026-05-13 09:07:36,058 - src.models.dl_models - INFO - TRANSFORMER Test MAPE=12259946350719795200.00% WAPE=92.28%
+2026-05-13 09:07:36,069 - src.modeling - INFO - [low/Transformer] Test WAPE=92.28%
+2026-05-13 09:07:36,072 - src.models.ensemble - INFO - Fusion results: avg=62.64%, weighted=71.24%, median=59.96%, trimmed=60.51%
+2026-05-13 09:07:36,116 - src.result_analysis - INFO - Saved results: output\results_low.csv
+2026-05-13 09:07:36,116 - src.result_analysis - INFO - [low] Best model: RandomForest (WAPE=59.50%)
+2026-05-13 09:07:36,493 - src.visualization - INFO - Saved plot: output\model_comparison_low.png
+2026-05-13 09:07:36,888 - src.visualization - INFO - Saved plot: output\feature_importance_low_RandomForest.png
+2026-05-13 09:07:37,122 - src.visualization - INFO - Saved plot: output\feature_importance_low_GBDT.png
+2026-05-13 09:07:37,370 - src.visualization - INFO - Saved plot: output\feature_importance_low_LightGBM.png
+2026-05-13 09:07:37,645 - src.visualization - INFO - Saved plot: output\feature_importance_low_XGBoost.png
+2026-05-13 09:07:37,889 - src.visualization - INFO - Saved plot: output\feature_importance_low_Ridge.png
+2026-05-13 09:07:37,889 - src.result_analysis - INFO - 
+LOW Group Results:
+2026-05-13 09:07:37,889 - src.result_analysis - INFO -         mape  wape      rmse      mae   r2             model  improvement_vs_baseline
+9.398278e+18 59.50 163152.86 36969.13 0.39      RandomForest                    38.31
+5.996000e+01 59.96       NaN      NaN  NaN   Ensemble_Median                    37.84
+6.051000e+01 60.51       NaN      NaN  NaN  Ensemble_Trimmed                    37.27
+9.427008e+18 60.58 170389.57 37635.01 0.33              GBDT                    37.20
+8.027792e+18 61.83 168877.33 38413.93 0.35           XGBoost                    35.90
+6.264000e+01 62.64       NaN      NaN  NaN      Ensemble_Avg                    35.05
+8.835199e+18 66.80 170301.53 41499.08 0.33          LightGBM                    30.75
+7.124000e+01 71.24       NaN      NaN  NaN Ensemble_Weighted                    26.13
+1.705506e+19 72.17 174789.81 44839.34 0.30             Ridge                    25.17
+9.228000e+01 92.28       NaN      NaN  NaN       Transformer                     4.33
+9.624000e+01 96.24       NaN      NaN  NaN              LSTM                     0.22
+2026-05-13 09:07:37,889 - __main__ - INFO - Group low completed
+2026-05-13 09:07:37,896 - __main__ - INFO - ============================================================
+2026-05-13 09:07:37,896 - __main__ - INFO - Stage 4-5: Short-Term Modeling
+2026-05-13 09:07:37,897 - __main__ - INFO - ============================================================
+2026-05-13 09:07:37,975 - src.short_term_modeling - INFO - [short] Rows=21,060, combos=1,706
+2026-05-13 09:07:42,111 - src.short_term_modeling - INFO - [short] Best baseline WAPE=75.11%
+2026-05-13 09:07:42,111 - src.short_term_modeling - INFO - [short/RandomForest] Tuning on strict train/val...
+2026-05-13 09:08:46,983 - src.short_term_modeling - INFO - [short/RandomForest] Test WAPE=53.16%
+2026-05-13 09:08:46,983 - src.short_term_modeling - INFO - [short/GBDT] Tuning on strict train/val...
+2026-05-13 09:17:16,281 - src.short_term_modeling - INFO - [short/GBDT] Test WAPE=54.16%
+2026-05-13 09:17:16,281 - src.short_term_modeling - INFO - [short/LightGBM] Tuning on strict train/val...
+2026-05-13 09:17:27,695 - src.short_term_modeling - INFO - [short/LightGBM] Test WAPE=54.22%
+2026-05-13 09:17:27,695 - src.short_term_modeling - INFO - [short/XGBoost] Tuning on strict train/val...
+2026-05-13 09:17:55,221 - src.short_term_modeling - INFO - [short/XGBoost] Test WAPE=53.56%
+2026-05-13 09:17:55,239 - src.short_term_modeling - INFO - [short/tuning] Saved short params to tuned_params.json
+2026-05-13 09:17:55,257 - src.short_term_modeling - INFO - [short/Ridge] Test WAPE=59.32%
+2026-05-13 09:17:55,276 - src.models.dl_models - INFO - Training LSTM (seq_length=4)
+2026-05-13 09:17:57,701 - src.models.dl_models - INFO - Samples: Train=10,502, Test=269
+2026-05-13 09:17:57,720 - src.models.dl_models - INFO - Using device: cuda
+2026-05-13 09:17:57,725 - src.models.dl_models - INFO - Model parameters: 847,617
+2026-05-13 09:18:50,337 - src.models.dl_models - INFO - DL early stop at epoch 32, best val loss 0.545778
+2026-05-13 09:18:50,343 - src.models.dl_models - INFO - LSTM Test MAPE=25657679359770624000.00% WAPE=121.23%
+2026-05-13 09:18:50,352 - src.short_term_modeling - INFO - [short/LSTM] Test WAPE=121.23%
+2026-05-13 09:18:50,357 - src.models.dl_models - INFO - Training TRANSFORMER (seq_length=4)
+2026-05-13 09:18:52,648 - src.models.dl_models - INFO - Samples: Train=10,502, Test=269
+2026-05-13 09:18:52,670 - src.models.dl_models - INFO - Using device: cuda
+2026-05-13 09:18:52,676 - src.models.dl_models - INFO - Model parameters: 276,481
+2026-05-13 09:21:49,497 - src.models.dl_models - INFO - DL early stop at epoch 91, best val loss 0.499336
+2026-05-13 09:21:49,514 - src.models.dl_models - INFO - TRANSFORMER Test MAPE=17184787780547379200.00% WAPE=122.50%
+2026-05-13 09:21:49,514 - src.short_term_modeling - INFO - [short/Transformer] Test WAPE=122.50%
+2026-05-13 09:21:49,514 - src.models.ensemble - INFO - Fusion results: avg=53.58%, weighted=58.49%, median=53.04%, trimmed=53.17%
+2026-05-13 09:21:49,523 - src.short_term_modeling - INFO - Saved short-term results: output\results_short.csv
+2026-05-13 09:21:49,523 - src.short_term_modeling - INFO - [short] Best model: Ensemble_Median (WAPE=53.04%)
+2026-05-13 09:21:49,530 - src.short_term_modeling - INFO - 
+SHORT Group Results:
+                 model   wape         mape      rmse      mae   r2  improvement_vs_baseline
+       Ensemble_Median  53.04 5.304000e+01       NaN      NaN  NaN                    29.39
+          RandomForest  53.16 4.182430e+18 113654.29 30256.75 0.72                    29.22
+      Ensemble_Trimmed  53.17 5.317000e+01       NaN      NaN  NaN                    29.21
+               XGBoost  53.56 4.760554e+18 107870.60 30481.42 0.75                    28.70
+          Ensemble_Avg  53.58 5.358000e+01       NaN      NaN  NaN                    28.66
+                  GBDT  54.16 8.153554e+18 114453.89 30827.04 0.71                    27.89
+              LightGBM  54.22 4.848882e+18 115284.32 30859.93 0.71                    27.81
+     Ensemble_Weighted  58.49 5.849000e+01       NaN      NaN  NaN                    22.12
+                 Ridge  59.32 8.305783e+18 115160.54 33762.79 0.71                    21.02
+   Baseline_MovingAvg3  75.11 7.511000e+01       NaN      NaN  NaN                     0.00
+         Baseline_Mean  77.05 7.705000e+01       NaN      NaN  NaN                    -2.58
+Baseline_SeasonalNaive  81.33 8.133000e+01       NaN      NaN  NaN                    -8.28
+    Baseline_LastValue  83.74 8.374000e+01       NaN      NaN  NaN                   -11.49
+                  LSTM 121.23 1.212300e+02       NaN      NaN  NaN                   -61.40
+           Transformer 122.50 1.225000e+02       NaN      NaN  NaN                   -63.10
+2026-05-13 09:21:49,917 - src.visualization - INFO - Saved plot: output\model_comparison_short.png
+2026-05-13 09:21:50,373 - src.visualization - INFO - Saved plot: output\feature_importance_short_RandomForest.png
+2026-05-13 09:21:50,619 - src.visualization - INFO - Saved plot: output\feature_importance_short_GBDT.png
+2026-05-13 09:21:50,861 - src.visualization - INFO - Saved plot: output\feature_importance_short_LightGBM.png
+2026-05-13 09:21:51,088 - src.visualization - INFO - Saved plot: output\feature_importance_short_XGBoost.png
+2026-05-13 09:21:51,339 - src.visualization - INFO - Saved plot: output\feature_importance_short_Ridge.png
+2026-05-13 09:21:51,355 - __main__ - INFO - Short-term modeling completed
+2026-05-13 09:21:51,732 - __main__ - INFO - Saved all models: output\all_models.pkl
+2026-05-13 09:21:51,732 - __main__ - INFO - ============================================================
+2026-05-13 09:21:51,732 - __main__ - INFO - Pipeline completed!
+2026-05-13 09:21:51,732 - __main__ - INFO - ============================================================

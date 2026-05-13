@@ -47,7 +47,7 @@ features:
     - "shop_type_desc"
 
 modeling:
-  enable_tuning: false
+  enable_tuning: true
   tree_models:
     - "RandomForest"
     - "GBDT"
@@ -73,7 +73,7 @@ modeling:
 
 short_term:
   enable_modeling: true
-  enable_tuning: false
+  enable_tuning: true
   enable_dl: true
   min_months: 6
   test_ratio: 0.2
