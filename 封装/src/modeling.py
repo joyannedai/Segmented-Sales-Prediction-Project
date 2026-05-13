@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 from typing import Dict, List, Tuple
 
 import numpy as np
@@ -34,6 +35,48 @@ def load_tuned_params(tuned_params_path: str, grp: str, model_name: str) -> dict
     except Exception as e:
         logger.warning(f"Failed to load tuned params for {grp}/{model_name}: {e}")
         return None
+
+
+def load_tuned_val_wape(tuned_params_path: str, grp: str, model_name: str) -> float:
+    """Load validation WAPE associated with persisted tuned parameters."""
+    if not tuned_params_path or not os.path.exists(tuned_params_path):
+        return None
+    try:
+        with open(tuned_params_path, "r", encoding="utf-8") as f:
+            tuned = json.load(f)
+        val_wape = tuned.get(grp, {}).get("_val_wapes", {}).get(model_name)
+        return float(val_wape) if val_wape is not None else None
+    except Exception as e:
+        logger.warning(f"Failed to load tuned val WAPE for {grp}/{model_name}: {e}")
+        return None
+
+
+def save_tuned_params(
+    tuned_params_path: str,
+    grp: str,
+    model_name: str,
+    params: dict,
+    val_wape: float = None,
+) -> None:
+    """Persist tuned tree-model parameters for later no-tuning runs."""
+    if not tuned_params_path or not params:
+        return
+    try:
+        tuned = {}
+        if os.path.exists(tuned_params_path):
+            with open(tuned_params_path, "r", encoding="utf-8") as f:
+                tuned = json.load(f)
+        os.makedirs(os.path.dirname(tuned_params_path) or ".", exist_ok=True)
+        tuned.setdefault(grp, {})
+        tuned[grp][model_name] = params
+        if val_wape is not None:
+            tuned[grp].setdefault("_val_wapes", {})
+            tuned[grp]["_val_wapes"][model_name] = float(val_wape)
+        with open(tuned_params_path, "w", encoding="utf-8") as f:
+            json.dump(tuned, f, ensure_ascii=False, indent=2)
+        logger.info(f"[{grp}/{model_name}] Saved tuned params to {tuned_params_path}")
+    except Exception as e:
+        logger.warning(f"Failed to save tuned params for {grp}/{model_name}: {e}")
 
 
 def run_modeling(
@@ -89,6 +132,7 @@ def run_modeling(
                 best_params, best_val_wape = tune_fn(X_train_strict, y_train_strict, X_val, y_val, n_trials=n_trials, seed=seed)
                 if best_params is not None:
                     logger.info(f"[{grp}/{name}] Best val WAPE={best_val_wape:.2f}%, params={best_params}")
+                    save_tuned_params(tuned_params_path, grp, name, best_params, best_val_wape)
                     if train_low_trees_on_strict:
                         model, y_pred, metrics = train_fn(X_train_strict, y_train_strict, X_test, y_test, **best_params)
                     else:
@@ -101,6 +145,9 @@ def run_modeling(
                 tuned_params = load_tuned_params(tuned_params_path, grp, name)
                 if tuned_params:
                     logger.info(f"[{grp}/{name}] Using tuned params from tuned_params.json")
+                    tuned_val_wape = load_tuned_val_wape(tuned_params_path, grp, name)
+                    if tuned_val_wape is not None:
+                        val_wapes[name] = tuned_val_wape
                     if train_low_trees_on_strict:
                         logger.info(f"[{grp}/{name}] Low group uses notebook-style strict training")
                         model, y_pred, metrics = train_fn(X_train_strict, y_train_strict, X_test, y_test, **tuned_params)

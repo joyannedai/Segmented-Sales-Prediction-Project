@@ -8,7 +8,7 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
 from src.evaluation import evaluate, wape
-from src.modeling import load_tuned_params
+from src.modeling import load_tuned_params, load_tuned_val_wape, save_tuned_params
 from src.models.ensemble import run_fusion
 from src.models.traditional import train_ridge
 from src.models.tree_models import train_gbdt, train_lightgbm, train_random_forest, train_xgboost
@@ -294,6 +294,7 @@ def tune_short_term_params(
     }
 
     tuned_short = {}
+    tuned_short_val_wapes = {}
     rows = []
     for name, tune_fn in tree_tuners.items():
         try:
@@ -310,6 +311,7 @@ def tune_short_term_params(
                 logger.warning(f"[short/{name}] Tuning unavailable")
                 continue
             tuned_short[name] = best_params
+            tuned_short_val_wapes[name] = float(best_val_wape)
             rows.append(
                 {
                     "group": "short",
@@ -329,7 +331,10 @@ def tune_short_term_params(
         return results_df
 
     tuned = _load_tuned_params_file(tuned_params_path)
-    tuned["short"] = tuned_short
+    tuned.setdefault("short", {})
+    for name, params in tuned_short.items():
+        tuned["short"][name] = params
+    tuned["short"]["_val_wapes"] = tuned_short_val_wapes
     _write_tuned_params_file(tuned_params_path, tuned)
     logger.info(f"[short/tuning] Saved short params to {tuned_params_path}")
     return results_df
@@ -355,10 +360,13 @@ def _train_tree_model(
     if enable_tuning and len(X_val) > 0:
         logger.info(f"[short/{name}] Tuning on strict train/val...")
         best_params, best_val_wape = tune_fn(X_train_strict, y_train_strict, X_val, y_val, n_trials=n_trials, seed=seed)
+        if best_params:
+            save_tuned_params(tuned_params_path, "short", name, best_params, best_val_wape)
     else:
         best_params = load_tuned_params(tuned_params_path, "short", name)
         if best_params:
             logger.info(f"[short/{name}] Using tuned params from tuned_params.json")
+            best_val_wape = load_tuned_val_wape(tuned_params_path, "short", name)
 
     if best_params:
         model, y_pred, metrics = train_fn(X_train, y_train, X_test, y_test, **best_params)
@@ -404,6 +412,7 @@ def run_short_term_modeling(
     trained_models = {}
     val_wapes = {}
     tuned_short = {}
+    tuned_short_val_wapes = {}
     n_trials = _trial_count(config)
     tuned_params_path = config.get("paths", {}).get("tuned_params")
 
@@ -426,13 +435,19 @@ def run_short_term_modeling(
                 val_wapes[name] = best_val_wape
             if enable_tuning and best_params:
                 tuned_short[name] = best_params
+                if best_val_wape is not None:
+                    tuned_short_val_wapes[name] = float(best_val_wape)
             logger.info(f"[short/{name}] Test WAPE={metrics['wape']:.2f}%")
         except Exception as e:
             logger.warning(f"[short/{name}] failed: {e}")
 
     if enable_tuning and tuned_short:
         tuned = _load_tuned_params_file(tuned_params_path)
-        tuned["short"] = tuned_short
+        tuned.setdefault("short", {})
+        for name, params in tuned_short.items():
+            tuned["short"][name] = params
+        if tuned_short_val_wapes:
+            tuned["short"]["_val_wapes"] = tuned_short_val_wapes
         _write_tuned_params_file(tuned_params_path, tuned)
         logger.info(f"[short/tuning] Saved short params to {tuned_params_path}")
 
