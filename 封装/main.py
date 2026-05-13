@@ -3,6 +3,9 @@ Capstone Sales Forecast - Main Entry Point.
 
 5-stage pipeline: data -> cluster -> preparation -> modeling -> analysis.
 """
+import os
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 import matplotlib
 matplotlib.use("Agg")
 

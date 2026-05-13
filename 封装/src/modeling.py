@@ -156,4 +156,9 @@ def run_modeling(
         for method, val in fusion.items():
             all_results.append({"model": f"Ensemble_{method.capitalize()}", "wape": val, "mape": val})
 
+    # Add baselines to results table
+    for name, val in baseline.items():
+        if name != "best" and isinstance(val, (int, float)) and not np.isnan(val):
+            all_results.append({"model": f"Baseline_{name.capitalize()}", "wape": val, "mape": val})
+
     return all_results, trained_models, all_test_preds, baseline, val_wapes
